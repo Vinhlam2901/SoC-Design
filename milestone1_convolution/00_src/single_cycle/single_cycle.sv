@@ -76,7 +76,7 @@ module single_cycle (
 //==================CONTROL_UNIT=====================================================================================
   control_unit  control_unit (
                               .instruction(inst      ),
-										.o_insn_vld (o_insn_vld),
+										          .o_insn_vld (o_insn_vld),
                               .pc_sel     (pc_sel    ),
                               .br_unsign  (br_unsign ),
                               .op1_sel    (op1_sel   ),
@@ -101,7 +101,7 @@ module single_cycle (
                               );
 //==================OPERATION_1=======================================================================================
   always_comb begin : op1_sel_branch
-	op1 = rs1_data;
+	  op1 = rs1_data;
     if(inst[6:0] == STYPE && op1_sel) begin
       case (inst[14:12])
         3'b000: op1 = ( br_equal                         ) ? o_pc_debug : rs1_data; // beq
@@ -123,13 +123,13 @@ module single_cycle (
 //==================OPERATION_2=======================================================================================
   assign op2 = (op2_sel) ? imm_ex : rs2_data;
 //==================ALU=================================================================================================
-  alu     alu  (
-                 .i_op_a      (op1),
-                 .i_op_b      (op2),
-                 .br_unsign_i (br_unsign),
-                 .i_alu_op    (alu_op),
-                 .o_alu_data  (rd_data_o)
-                );
+  alu alu (
+            .i_op_a      (op1),
+            .i_op_b      (op2),
+            .br_unsign_i (br_unsign),
+            .i_alu_op    (alu_op),
+            .o_alu_data  (rd_data_o)
+          );
 //==================LSU=================================================================================================
   always_comb begin
     // has rs2'data if stype to store rs2'data to mem
@@ -194,7 +194,6 @@ module single_cycle (
         3'b111: jmp_pc = (~br_less || (br_equal && br_unsign)) ? rd_data_o : (o_pc_debug + 32'd4); // bgeu
         default: jmp_pc = rd_data_o; // JALR hoặc fallback
       endcase
-      // wb_data_o giữ giá trị mặc định nếu không cần ghi
     end
     2'b10: begin
       wb_data_o = pc_plus4;

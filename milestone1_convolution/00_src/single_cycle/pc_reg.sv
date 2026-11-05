@@ -10,12 +10,13 @@ module pc_reg (
   input  wire  [31:0]  pc_reg,
   output reg   [31:0]  pc_o
 );
-  full_adder_32bit PCplus4 (
-                            .A_i(pc_reg),
-                            .Y_i(32'd4),
-                            .C_i(1'b0),
-                            .Sum_o(pc_o),
-                            .c_o()
-                           );
-
+  cla_nbit #(
+    .WIDTH_CLA(32)
+    ) PCplus4 (
+    .a   (pc_reg),
+    .b   (32'd4),
+    .cin (1'b0),
+    .sum (pc_o),
+    .cout()
+  );
 endmodule

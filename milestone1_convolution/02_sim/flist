@@ -1,14 +1,18 @@
 -sv
 -timescale 1ns/100ps
 # TESTBENCH FILES
-./../01_tb/scoreboard.sv
-./../01_tb/tbench.sv
-./../01_tb/tlib.svh
-./../01_tb/driver.sv
+#./../01_tb/scoreboard.sv
+#./../01_tb/tbench.sv
+#./../01_tb/tlib.svh
+#./../01_tb/driver.sv
+./../00_src/package_param.sv
+./../01_tb/tb_mul.sv
 # SOURCE CODE FILES
 # --- 1. Packages & Parameters ---
-./../00_src/single_cycle/package_param.sv
 # --- 2. Design Modules ---
+./../00_src/ip/booth_encoder.sv
+./../00_src/ip/csa.sv
+./../00_src/ip/mul.sv
 ./../00_src/single_cycle/alu.sv
 ./../00_src/single_cycle/lsu.sv
 ./../00_src/single_cycle/mux_16to1.sv
@@ -17,10 +21,8 @@
 ./../00_src/single_cycle/brcomp.sv
 ./../00_src/single_cycle/and_32bit.sv
 ./../00_src/single_cycle/srl.sv
-./../00_src/single_cycle/full_adder.sv
 ./../00_src/single_cycle/mux_32to1.sv
 ./../00_src/single_cycle/add_subtract.sv
-./../00_src/single_cycle/full_adder_32bit.sv
 ./../00_src/single_cycle/decoder_5to32.sv
 ./../00_src/single_cycle/regfile.sv
 ./../00_src/single_cycle/sll.sv
@@ -28,9 +30,7 @@
 ./../00_src/single_cycle/sra.sv
 ./../00_src/single_cycle/register_32bit.sv
 ./../00_src/single_cycle/single_cycle.sv
-./../00_src/single_cycle/encoder_16to4.sv
 ./../00_src/single_cycle/immgen.sv
-./../00_src/single_cycle/multiply_extension.sv
 ./../00_src/single_cycle/cla_nbit.sv
 ./../00_src/single_cycle/xor_32bit.sv
 ./../00_src/single_cycle/control_unit.sv

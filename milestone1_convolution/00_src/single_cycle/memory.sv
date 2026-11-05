@@ -53,15 +53,16 @@ module memory (
     endcase
   end
   assign mem_addr = {23'b0 , i_addr[10:2]};
-
-  full_adder_32bit fa (
-                        .A_i(mem_addr),
-                        .Y_i(32'd1),
-                        .C_i(1'b0),
-                        .Sum_o(mem_addr_plus1),
-                        .c_o()
-                      );
-
+  //-----------Address Incrementer for Misaligned Access----------------------------------------------------------
+  cla_nbit #(
+    .WIDTH_CLA(32)
+    ) addr_incr (
+    .a   (mem_addr),
+    .b   (32'd1),
+    .cin (1'b0),
+    .sum (mem_addr_plus1),
+    .cout()
+  );
   assign mem_ld_align    = mem[mem_addr];
   assign mem_ld_misalign = mem[mem_addr_plus1];
 
@@ -102,8 +103,7 @@ module memory (
         if (i_bmask_misalign[3]) mem[mem_addr_plus1][31:24] <= mem_st_misalign[31:24];
     end
   end
-
-
+  
   always_comb begin : mem_load
     o_rdata = 32'b0;
     if(is_word) begin

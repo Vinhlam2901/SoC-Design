@@ -20,7 +20,13 @@ module brcomp (
   wire o_br_less_uns, o_br_less_s;
   wire o_br_less1, o_br_less2, o_br_less3;
 //===============================================CODE================================================
-  add_subtract S1 (.a_i(i_rs1_data),.b_i(i_rs2_data),.cin_i(1'b1),.result_o(sub_o),.cout_o(cout));
+  add_subtract S1 (
+    .a_i     (i_rs1_data),
+    .b_i     (i_rs2_data),
+    .cin_i   (1'b1),
+    .result_o(sub_o),
+    .cout_o  (cout)
+  );
   // sign check
   assign  same_sign     = (i_rs1_data[31] && i_rs2_data[31]) ? 1'b1 : 1'b0;  // if same sign : 1
   assign  diff_sign     = (i_rs1_data[31] ^  i_rs2_data[31]) ? 1'b1 : 1'b0;  // if diff sign : 1

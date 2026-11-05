@@ -1,15 +1,15 @@
 xrun(64): 20.09-s001: (c) Copyright 1995-2020 Cadence Design Systems, Inc.
-TOOL:	xrun(64)	20.09-s001: Started on Nov 05, 2026 at 22:28:18 +07
+TOOL:	xrun(64)	20.09-s001: Started on Nov 05, 2026 at 23:38:36 +07
 xrun
 	-access +rwc
 	-f ./flist
 		-sv
 		-timescale 1ns/100ps
-		./../01_tb/scoreboard.sv
-		./../01_tb/tbench.sv
-		./../01_tb/tlib.svh
-		./../01_tb/driver.sv
-		./../00_src/single_cycle/package_param.sv
+		./../00_src/package_param.sv
+		./../01_tb/tb_mul.sv
+		./../00_src/ip/booth_encoder.sv
+		./../00_src/ip/csa.sv
+		./../00_src/ip/mul.sv
 		./../00_src/single_cycle/alu.sv
 		./../00_src/single_cycle/lsu.sv
 		./../00_src/single_cycle/mux_16to1.sv
@@ -18,10 +18,8 @@ xrun
 		./../00_src/single_cycle/brcomp.sv
 		./../00_src/single_cycle/and_32bit.sv
 		./../00_src/single_cycle/srl.sv
-		./../00_src/single_cycle/full_adder.sv
 		./../00_src/single_cycle/mux_32to1.sv
 		./../00_src/single_cycle/add_subtract.sv
-		./../00_src/single_cycle/full_adder_32bit.sv
 		./../00_src/single_cycle/decoder_5to32.sv
 		./../00_src/single_cycle/regfile.sv
 		./../00_src/single_cycle/sll.sv
@@ -29,62 +27,2044 @@ xrun
 		./../00_src/single_cycle/sra.sv
 		./../00_src/single_cycle/register_32bit.sv
 		./../00_src/single_cycle/single_cycle.sv
-		./../00_src/single_cycle/encoder_16to4.sv
 		./../00_src/single_cycle/immgen.sv
-		./../00_src/single_cycle/multiply_extension.sv
 		./../00_src/single_cycle/cla_nbit.sv
 		./../00_src/single_cycle/xor_32bit.sv
 		./../00_src/single_cycle/control_unit.sv
-Recompiling... reason: file '../00_src/single_cycle/alu.sv' is newer than expected.
-	expected: Thu Nov  5 22:28:06 2026
-	actual:   Thu Nov  5 22:28:16 2026
-file: ./../00_src/single_cycle/alu.sv
-	module worklib.alu:sv
-		errors: 0, warnings: 0
-		Caching library 'worklib' ....... Done
-	Elaborating the design hierarchy:
-	Top level design units:
-		package_param
-		$unit_0x52668fdc
-		tbench
-		full_adder
-		encoder_16to4
-		multiply_extension
-xmelab: *W,DSEMEL: This SystemVerilog design will be simulated as per IEEE 1800-2009 SystemVerilog simulation semantics. Use -disable_sem2009 option for turning off SV 2009 simulation semantics.
-	Building instance overlay tables: .................... Done
-	Generating native compiled code:
-		worklib.alu:sv <0x6b5da66e>
-			streams:   6, words:  1285
-	Building instance specific data structures.
-	Loading native compiled code:     .................... Done
-	Design hierarchy summary:
-		                   Instances  Unique
-		Modules:                  84      28
-		Verilog packages:          1       1
-		Primitives:              101       3
-		Registers:               222     176
-		Scalar wires:           1853       -
-		Expanded wires:          576      18
-		Vectored wires:          313       -
-		Always blocks:            49      18
-		Initial blocks:            7       7
-		Cont. assignments:      1215     278
-		Pseudo assignments:      142     141
-		Compilation units:         1       1
-		Simulation timescale:  100ps
-	Writing initial simulation snapshot: worklib.tbench:sv
-Loading snapshot worklib.tbench:sv .................... Done
+Loading snapshot worklib.tb_mul:sv .................... Done
+SVSEED default: 1
+xmsim: *W,RNDXCELON: A newer version of the SystemVerilog constraint solver is being used which has better support for array-solving, new solve-order mechanism, and seed stability enhancements..
 xmsim: *W,DSEM2009: This SystemVerilog design is simulated as per IEEE 1800-2009 SystemVerilog simulation semantics. Use -disable_sem2009 option for turning off SV 2009 simulation semantics.
 xcelium> source /opt/cadence/installs/XCELIUM2009/tools/xcelium/files/xmsimrc
 xcelium> run
+===============================================================================
+    VERIFICATION SUITE: UNSIGNED PIXEL (8-bit) x SIGNED KERNEL (5-bit)        
+===============================================================================
+[PASS] [ZERO        ] Test #1    | opa = 0x0 (unformatted write to stdout
+) | opb = 0x0 (  0) | DUT =      0 | Exp =      0
+[PASS] [ZERO        ] Test #2    | opa = 0xff (unformatted write to stdout
+) | opb = 0x0 (  0) | DUT =      0 | Exp =      0
+[PASS] [ZERO        ] Test #3    | opa = 0x0 (unformatted write to stdout
+) | opb = 0xb ( -5) | DUT =      0 | Exp =      0
+[PASS] [MAX_UNS_X_MAX_SGD] Test #4    | opa = 0xff (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =   -255 | Exp =   -255
+[PASS] [MAX_UNS_X_MIN_SGD] Test #5    | opa = 0xff (unformatted write to stdout
+) | opb = 0x0 (  0) | DUT =      0 | Exp =      0
+[PASS] [MID_UNS_X_NEG1] Test #6    | opa = 0x80 (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =   -128 | Exp =   -128
+[PASS] [PATTERN_POS ] Test #7    | opa = 0xaa (unformatted write to stdout
+) | opb = 0x7 (  7) | DUT =   1190 | Exp =   1190
+[PASS] [PATTERN_NEG ] Test #8    | opa = 0xaa (unformatted write to stdout
+) | opb = 0x9 ( -7) | DUT =  -1190 | Exp =  -1190
 
-SINGLE CYCLE - ISA test
+--- CONSTRAINED RANDOM TESTING ---
+[PASS] [RANDOM      ] Test #9    | opa = 0x23 (unformatted write to stdout
+) | opb = 0xd ( -3) | DUT =   -105 | Exp =   -105
+[PASS] [RANDOM      ] Test #10   | opa = 0xcb (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -406 | Exp =   -406
+[PASS] [RANDOM      ] Test #11   | opa = 0xd6 (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =  -1284 | Exp =  -1284
+[PASS] [RANDOM      ] Test #12   | opa = 0x6c (unformatted write to stdout
+) | opb = 0x3 (  3) | DUT =    324 | Exp =    324
+[PASS] [RANDOM      ] Test #13   | opa = 0xff (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -510 | Exp =   -510
+[PASS] [RANDOM      ] Test #14   | opa = 0x2d (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =    -45 | Exp =    -45
+[PASS] [RANDOM      ] Test #15   | opa = 0x34 (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -104 | Exp =   -104
+[PASS] [RANDOM      ] Test #16   | opa = 0xaa (unformatted write to stdout
+) | opb = 0x8 ( -8) | DUT =  -1360 | Exp =  -1360
+[PASS] [RANDOM      ] Test #17   | opa = 0xbc (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -376 | Exp =   -376
+[PASS] [RANDOM      ] Test #18   | opa = 0xd0 (unformatted write to stdout
+) | opb = 0x7 (  7) | DUT =   1456 | Exp =   1456
+[PASS] [RANDOM      ] Test #19   | opa = 0xa6 (unformatted write to stdout
+) | opb = 0x6 (  6) | DUT =    996 | Exp =    996
+[PASS] [RANDOM      ] Test #20   | opa = 0xf0 (unformatted write to stdout
+) | opb = 0x2 (  2) | DUT =    480 | Exp =    480
+[PASS] [RANDOM      ] Test #21   | opa = 0x2d (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =    -90 | Exp =    -90
+[PASS] [RANDOM      ] Test #22   | opa = 0x9f (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =   -954 | Exp =   -954
+[PASS] [RANDOM      ] Test #23   | opa = 0x9 (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =    -36 | Exp =    -36
+[PASS] [RANDOM      ] Test #24   | opa = 0xfe (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -508 | Exp =   -508
+[PASS] [RANDOM      ] Test #25   | opa = 0x4b (unformatted write to stdout
+) | opb = 0xd ( -3) | DUT =   -225 | Exp =   -225
+[PASS] [RANDOM      ] Test #26   | opa = 0xbc (unformatted write to stdout
+) | opb = 0x0 (  0) | DUT =      0 | Exp =      0
+[PASS] [RANDOM      ] Test #27   | opa = 0xe9 (unformatted write to stdout
+) | opb = 0x4 (  4) | DUT =    932 | Exp =    932
+[PASS] [RANDOM      ] Test #28   | opa = 0xfa (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =  -1500 | Exp =  -1500
+[PASS] [RANDOM      ] Test #29   | opa = 0xf9 (unformatted write to stdout
+) | opb = 0x1 (  1) | DUT =    249 | Exp =    249
+[PASS] [RANDOM      ] Test #30   | opa = 0xe5 (unformatted write to stdout
+) | opb = 0xb ( -5) | DUT =  -1145 | Exp =  -1145
+[PASS] [RANDOM      ] Test #31   | opa = 0x64 (unformatted write to stdout
+) | opb = 0xd ( -3) | DUT =   -300 | Exp =   -300
+[PASS] [RANDOM      ] Test #32   | opa = 0xa7 (unformatted write to stdout
+) | opb = 0x3 (  3) | DUT =    501 | Exp =    501
+[PASS] [RANDOM      ] Test #33   | opa = 0x7b (unformatted write to stdout
+) | opb = 0xd ( -3) | DUT =   -369 | Exp =   -369
+[PASS] [RANDOM      ] Test #34   | opa = 0x6 (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =     -6 | Exp =     -6
+[PASS] [RANDOM      ] Test #35   | opa = 0xb7 (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =   -732 | Exp =   -732
+[PASS] [RANDOM      ] Test #36   | opa = 0xd4 (unformatted write to stdout
+) | opb = 0x9 ( -7) | DUT =  -1484 | Exp =  -1484
+[PASS] [RANDOM      ] Test #37   | opa = 0x9d (unformatted write to stdout
+) | opb = 0x3 (  3) | DUT =    471 | Exp =    471
+[PASS] [RANDOM      ] Test #38   | opa = 0x0 (unformatted write to stdout
+) | opb = 0x1 (  1) | DUT =      0 | Exp =      0
+[PASS] [RANDOM      ] Test #39   | opa = 0x7e (unformatted write to stdout
+) | opb = 0x1 (  1) | DUT =    126 | Exp =    126
+[PASS] [RANDOM      ] Test #40   | opa = 0xf7 (unformatted write to stdout
+) | opb = 0x2 (  2) | DUT =    494 | Exp =    494
+[PASS] [RANDOM      ] Test #41   | opa = 0x8f (unformatted write to stdout
+) | opb = 0x0 (  0) | DUT =      0 | Exp =      0
+[PASS] [RANDOM      ] Test #42   | opa = 0x99 (unformatted write to stdout
+) | opb = 0x4 (  4) | DUT =    612 | Exp =    612
+[PASS] [RANDOM      ] Test #43   | opa = 0xa2 (unformatted write to stdout
+) | opb = 0x9 ( -7) | DUT =  -1134 | Exp =  -1134
+[PASS] [RANDOM      ] Test #44   | opa = 0xf6 (unformatted write to stdout
+) | opb = 0x7 (  7) | DUT =   1722 | Exp =   1722
+[PASS] [RANDOM      ] Test #45   | opa = 0x66 (unformatted write to stdout
+) | opb = 0x1 (  1) | DUT =    102 | Exp =    102
+[PASS] [RANDOM      ] Test #46   | opa = 0x9f (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =   -159 | Exp =   -159
+[PASS] [RANDOM      ] Test #47   | opa = 0xfd (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =  -1518 | Exp =  -1518
+[PASS] [RANDOM      ] Test #48   | opa = 0x28 (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =    -80 | Exp =    -80
+[PASS] [RANDOM      ] Test #49   | opa = 0x59 (unformatted write to stdout
+) | opb = 0x4 (  4) | DUT =    356 | Exp =    356
+[PASS] [RANDOM      ] Test #50   | opa = 0x41 (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -130 | Exp =   -130
+[PASS] [RANDOM      ] Test #51   | opa = 0xa5 (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =   -660 | Exp =   -660
+[PASS] [RANDOM      ] Test #52   | opa = 0x79 (unformatted write to stdout
+) | opb = 0x9 ( -7) | DUT =   -847 | Exp =   -847
+[PASS] [RANDOM      ] Test #53   | opa = 0xa6 (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =   -996 | Exp =   -996
+[PASS] [RANDOM      ] Test #54   | opa = 0x8b (unformatted write to stdout
+) | opb = 0xd ( -3) | DUT =   -417 | Exp =   -417
+[PASS] [RANDOM      ] Test #55   | opa = 0xec (unformatted write to stdout
+) | opb = 0x9 ( -7) | DUT =  -1652 | Exp =  -1652
+[PASS] [RANDOM      ] Test #56   | opa = 0xcc (unformatted write to stdout
+) | opb = 0x6 (  6) | DUT =   1224 | Exp =   1224
+[PASS] [RANDOM      ] Test #57   | opa = 0x29 (unformatted write to stdout
+) | opb = 0x7 (  7) | DUT =    287 | Exp =    287
+[PASS] [RANDOM      ] Test #58   | opa = 0x1f (unformatted write to stdout
+) | opb = 0x4 (  4) | DUT =    124 | Exp =    124
+[PASS] [RANDOM      ] Test #59   | opa = 0x12 (unformatted write to stdout
+) | opb = 0xb ( -5) | DUT =    -90 | Exp =    -90
+[PASS] [RANDOM      ] Test #60   | opa = 0x83 (unformatted write to stdout
+) | opb = 0x9 ( -7) | DUT =   -917 | Exp =   -917
+[PASS] [RANDOM      ] Test #61   | opa = 0xa5 (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =   -660 | Exp =   -660
+[PASS] [RANDOM      ] Test #62   | opa = 0x17 (unformatted write to stdout
+) | opb = 0x4 (  4) | DUT =     92 | Exp =     92
+[PASS] [RANDOM      ] Test #63   | opa = 0xa3 (unformatted write to stdout
+) | opb = 0x3 (  3) | DUT =    489 | Exp =    489
+[PASS] [RANDOM      ] Test #64   | opa = 0x3a (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -116 | Exp =   -116
+[PASS] [RANDOM      ] Test #65   | opa = 0xb9 (unformatted write to stdout
+) | opb = 0xd ( -3) | DUT =   -555 | Exp =   -555
+[PASS] [RANDOM      ] Test #66   | opa = 0x16 (unformatted write to stdout
+) | opb = 0x8 ( -8) | DUT =   -176 | Exp =   -176
+[PASS] [RANDOM      ] Test #67   | opa = 0x86 (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -268 | Exp =   -268
+[PASS] [RANDOM      ] Test #68   | opa = 0xb8 (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =  -1104 | Exp =  -1104
+[PASS] [RANDOM      ] Test #69   | opa = 0x8d (unformatted write to stdout
+) | opb = 0x4 (  4) | DUT =    564 | Exp =    564
+[PASS] [RANDOM      ] Test #70   | opa = 0x91 (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -290 | Exp =   -290
+[PASS] [RANDOM      ] Test #71   | opa = 0xbe (unformatted write to stdout
+) | opb = 0x4 (  4) | DUT =    760 | Exp =    760
+[PASS] [RANDOM      ] Test #72   | opa = 0x1 (unformatted write to stdout
+) | opb = 0x3 (  3) | DUT =      3 | Exp =      3
+[PASS] [RANDOM      ] Test #73   | opa = 0x22 (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =   -204 | Exp =   -204
+[PASS] [RANDOM      ] Test #74   | opa = 0x3c (unformatted write to stdout
+) | opb = 0x6 (  6) | DUT =    360 | Exp =    360
+[PASS] [RANDOM      ] Test #75   | opa = 0xd6 (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -428 | Exp =   -428
+[PASS] [RANDOM      ] Test #76   | opa = 0xac (unformatted write to stdout
+) | opb = 0x5 (  5) | DUT =    860 | Exp =    860
+[PASS] [RANDOM      ] Test #77   | opa = 0x5f (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -190 | Exp =   -190
+[PASS] [RANDOM      ] Test #78   | opa = 0xb2 (unformatted write to stdout
+) | opb = 0x6 (  6) | DUT =   1068 | Exp =   1068
+[PASS] [RANDOM      ] Test #79   | opa = 0x7 (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =     -7 | Exp =     -7
+[PASS] [RANDOM      ] Test #80   | opa = 0x55 (unformatted write to stdout
+) | opb = 0x6 (  6) | DUT =    510 | Exp =    510
+[PASS] [RANDOM      ] Test #81   | opa = 0xc8 (unformatted write to stdout
+) | opb = 0x7 (  7) | DUT =   1400 | Exp =   1400
+[PASS] [RANDOM      ] Test #82   | opa = 0x47 (unformatted write to stdout
+) | opb = 0x0 (  0) | DUT =      0 | Exp =      0
+[PASS] [RANDOM      ] Test #83   | opa = 0x0 (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =      0 | Exp =      0
+[PASS] [RANDOM      ] Test #84   | opa = 0x51 (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =   -486 | Exp =   -486
+[PASS] [RANDOM      ] Test #85   | opa = 0xe1 (unformatted write to stdout
+) | opb = 0x2 (  2) | DUT =    450 | Exp =    450
+[PASS] [RANDOM      ] Test #86   | opa = 0xe (unformatted write to stdout
+) | opb = 0x8 ( -8) | DUT =   -112 | Exp =   -112
+[PASS] [RANDOM      ] Test #87   | opa = 0x6a (unformatted write to stdout
+) | opb = 0xb ( -5) | DUT =   -530 | Exp =   -530
+[PASS] [RANDOM      ] Test #88   | opa = 0x83 (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =   -131 | Exp =   -131
+[PASS] [RANDOM      ] Test #89   | opa = 0x4d (unformatted write to stdout
+) | opb = 0x8 ( -8) | DUT =   -616 | Exp =   -616
+[PASS] [RANDOM      ] Test #90   | opa = 0x5 (unformatted write to stdout
+) | opb = 0x0 (  0) | DUT =      0 | Exp =      0
+[PASS] [RANDOM      ] Test #91   | opa = 0x18 (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =    -96 | Exp =    -96
+[PASS] [RANDOM      ] Test #92   | opa = 0x6a (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =   -424 | Exp =   -424
+[PASS] [RANDOM      ] Test #93   | opa = 0x8d (unformatted write to stdout
+) | opb = 0x3 (  3) | DUT =    423 | Exp =    423
+[PASS] [RANDOM      ] Test #94   | opa = 0x83 (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =   -786 | Exp =   -786
+[PASS] [RANDOM      ] Test #95   | opa = 0xe4 (unformatted write to stdout
+) | opb = 0x1 (  1) | DUT =    228 | Exp =    228
+[PASS] [RANDOM      ] Test #96   | opa = 0x5d (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =   -558 | Exp =   -558
+[PASS] [RANDOM      ] Test #97   | opa = 0x7f (unformatted write to stdout
+) | opb = 0x7 (  7) | DUT =    889 | Exp =    889
+[PASS] [RANDOM      ] Test #98   | opa = 0xc2 (unformatted write to stdout
+) | opb = 0x5 (  5) | DUT =    970 | Exp =    970
+[PASS] [RANDOM      ] Test #99   | opa = 0x3f (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =    -63 | Exp =    -63
+[PASS] [RANDOM      ] Test #100  | opa = 0xf6 (unformatted write to stdout
+) | opb = 0x1 (  1) | DUT =    246 | Exp =    246
+[PASS] [RANDOM      ] Test #101  | opa = 0x81 (unformatted write to stdout
+) | opb = 0x1 (  1) | DUT =    129 | Exp =    129
+[PASS] [RANDOM      ] Test #102  | opa = 0xaa (unformatted write to stdout
+) | opb = 0x3 (  3) | DUT =    510 | Exp =    510
+[PASS] [RANDOM      ] Test #103  | opa = 0x72 (unformatted write to stdout
+) | opb = 0x1 (  1) | DUT =    114 | Exp =    114
+[PASS] [RANDOM      ] Test #104  | opa = 0xad (unformatted write to stdout
+) | opb = 0x5 (  5) | DUT =    865 | Exp =    865
+[PASS] [RANDOM      ] Test #105  | opa = 0x4a (unformatted write to stdout
+) | opb = 0x7 (  7) | DUT =    518 | Exp =    518
+[PASS] [RANDOM      ] Test #106  | opa = 0xbf (unformatted write to stdout
+) | opb = 0x2 (  2) | DUT =    382 | Exp =    382
+[PASS] [RANDOM      ] Test #107  | opa = 0x8d (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =   -564 | Exp =   -564
+[PASS] [RANDOM      ] Test #108  | opa = 0xa3 (unformatted write to stdout
+) | opb = 0x4 (  4) | DUT =    652 | Exp =    652
+[PASS] [RANDOM      ] Test #109  | opa = 0x70 (unformatted write to stdout
+) | opb = 0x5 (  5) | DUT =    560 | Exp =    560
+[PASS] [RANDOM      ] Test #110  | opa = 0x48 (unformatted write to stdout
+) | opb = 0x5 (  5) | DUT =    360 | Exp =    360
+[PASS] [RANDOM      ] Test #111  | opa = 0x3 (unformatted write to stdout
+) | opb = 0x8 ( -8) | DUT =    -24 | Exp =    -24
+[PASS] [RANDOM      ] Test #112  | opa = 0xa2 (unformatted write to stdout
+) | opb = 0x1 (  1) | DUT =    162 | Exp =    162
+[PASS] [RANDOM      ] Test #113  | opa = 0xa4 (unformatted write to stdout
+) | opb = 0xb ( -5) | DUT =   -820 | Exp =   -820
+[PASS] [RANDOM      ] Test #114  | opa = 0x9f (unformatted write to stdout
+) | opb = 0x0 (  0) | DUT =      0 | Exp =      0
+[PASS] [RANDOM      ] Test #115  | opa = 0x1 (unformatted write to stdout
+) | opb = 0xb ( -5) | DUT =     -5 | Exp =     -5
+[PASS] [RANDOM      ] Test #116  | opa = 0x40 (unformatted write to stdout
+) | opb = 0x0 (  0) | DUT =      0 | Exp =      0
+[PASS] [RANDOM      ] Test #117  | opa = 0x94 (unformatted write to stdout
+) | opb = 0x0 (  0) | DUT =      0 | Exp =      0
+[PASS] [RANDOM      ] Test #118  | opa = 0xba (unformatted write to stdout
+) | opb = 0xd ( -3) | DUT =   -558 | Exp =   -558
+[PASS] [RANDOM      ] Test #119  | opa = 0x65 (unformatted write to stdout
+) | opb = 0x8 ( -8) | DUT =   -808 | Exp =   -808
+[PASS] [RANDOM      ] Test #120  | opa = 0x43 (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -134 | Exp =   -134
+[PASS] [RANDOM      ] Test #121  | opa = 0x84 (unformatted write to stdout
+) | opb = 0x2 (  2) | DUT =    264 | Exp =    264
+[PASS] [RANDOM      ] Test #122  | opa = 0xd9 (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =  -1302 | Exp =  -1302
+[PASS] [RANDOM      ] Test #123  | opa = 0x75 (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =   -468 | Exp =   -468
+[PASS] [RANDOM      ] Test #124  | opa = 0x28 (unformatted write to stdout
+) | opb = 0x1 (  1) | DUT =     40 | Exp =     40
+[PASS] [RANDOM      ] Test #125  | opa = 0x98 (unformatted write to stdout
+) | opb = 0xd ( -3) | DUT =   -456 | Exp =   -456
+[PASS] [RANDOM      ] Test #126  | opa = 0x6c (unformatted write to stdout
+) | opb = 0x3 (  3) | DUT =    324 | Exp =    324
+[PASS] [RANDOM      ] Test #127  | opa = 0x39 (unformatted write to stdout
+) | opb = 0xd ( -3) | DUT =   -171 | Exp =   -171
+[PASS] [RANDOM      ] Test #128  | opa = 0xdf (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =   -223 | Exp =   -223
+[PASS] [RANDOM      ] Test #129  | opa = 0xca (unformatted write to stdout
+) | opb = 0x7 (  7) | DUT =   1414 | Exp =   1414
+[PASS] [RANDOM      ] Test #130  | opa = 0x25 (unformatted write to stdout
+) | opb = 0xb ( -5) | DUT =   -185 | Exp =   -185
+[PASS] [RANDOM      ] Test #131  | opa = 0x8c (unformatted write to stdout
+) | opb = 0x0 (  0) | DUT =      0 | Exp =      0
+[PASS] [RANDOM      ] Test #132  | opa = 0xb7 (unformatted write to stdout
+) | opb = 0x0 (  0) | DUT =      0 | Exp =      0
+[PASS] [RANDOM      ] Test #133  | opa = 0x8f (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =   -572 | Exp =   -572
+[PASS] [RANDOM      ] Test #134  | opa = 0x3f (unformatted write to stdout
+) | opb = 0x8 ( -8) | DUT =   -504 | Exp =   -504
+[PASS] [RANDOM      ] Test #135  | opa = 0xdd (unformatted write to stdout
+) | opb = 0x7 (  7) | DUT =   1547 | Exp =   1547
+[PASS] [RANDOM      ] Test #136  | opa = 0x79 (unformatted write to stdout
+) | opb = 0x5 (  5) | DUT =    605 | Exp =    605
+[PASS] [RANDOM      ] Test #137  | opa = 0x34 (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =   -208 | Exp =   -208
+[PASS] [RANDOM      ] Test #138  | opa = 0xef (unformatted write to stdout
+) | opb = 0x2 (  2) | DUT =    478 | Exp =    478
+[PASS] [RANDOM      ] Test #139  | opa = 0x9f (unformatted write to stdout
+) | opb = 0xd ( -3) | DUT =   -477 | Exp =   -477
+[PASS] [RANDOM      ] Test #140  | opa = 0xb6 (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =  -1092 | Exp =  -1092
+[PASS] [RANDOM      ] Test #141  | opa = 0xdf (unformatted write to stdout
+) | opb = 0x2 (  2) | DUT =    446 | Exp =    446
+[PASS] [RANDOM      ] Test #142  | opa = 0x5 (unformatted write to stdout
+) | opb = 0x5 (  5) | DUT =     25 | Exp =     25
+[PASS] [RANDOM      ] Test #143  | opa = 0x64 (unformatted write to stdout
+) | opb = 0x1 (  1) | DUT =    100 | Exp =    100
+[PASS] [RANDOM      ] Test #144  | opa = 0x3d (unformatted write to stdout
+) | opb = 0xd ( -3) | DUT =   -183 | Exp =   -183
+[PASS] [RANDOM      ] Test #145  | opa = 0x4d (unformatted write to stdout
+) | opb = 0x3 (  3) | DUT =    231 | Exp =    231
+[PASS] [RANDOM      ] Test #146  | opa = 0xc5 (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =  -1182 | Exp =  -1182
+[PASS] [RANDOM      ] Test #147  | opa = 0xb3 (unformatted write to stdout
+) | opb = 0x4 (  4) | DUT =    716 | Exp =    716
+[PASS] [RANDOM      ] Test #148  | opa = 0xcd (unformatted write to stdout
+) | opb = 0x4 (  4) | DUT =    820 | Exp =    820
+[PASS] [RANDOM      ] Test #149  | opa = 0x34 (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -104 | Exp =   -104
+[PASS] [RANDOM      ] Test #150  | opa = 0xe6 (unformatted write to stdout
+) | opb = 0xb ( -5) | DUT =  -1150 | Exp =  -1150
+[PASS] [RANDOM      ] Test #151  | opa = 0x80 (unformatted write to stdout
+) | opb = 0x5 (  5) | DUT =    640 | Exp =    640
+[PASS] [RANDOM      ] Test #152  | opa = 0xec (unformatted write to stdout
+) | opb = 0x4 (  4) | DUT =    944 | Exp =    944
+[PASS] [RANDOM      ] Test #153  | opa = 0x5d (unformatted write to stdout
+) | opb = 0x0 (  0) | DUT =      0 | Exp =      0
+[PASS] [RANDOM      ] Test #154  | opa = 0xc7 (unformatted write to stdout
+) | opb = 0x1 (  1) | DUT =    199 | Exp =    199
+[PASS] [RANDOM      ] Test #155  | opa = 0x63 (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =    -99 | Exp =    -99
+[PASS] [RANDOM      ] Test #156  | opa = 0xf5 (unformatted write to stdout
+) | opb = 0x2 (  2) | DUT =    490 | Exp =    490
+[PASS] [RANDOM      ] Test #157  | opa = 0x6c (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =   -432 | Exp =   -432
+[PASS] [RANDOM      ] Test #158  | opa = 0xd6 (unformatted write to stdout
+) | opb = 0x0 (  0) | DUT =      0 | Exp =      0
+[PASS] [RANDOM      ] Test #159  | opa = 0x73 (unformatted write to stdout
+) | opb = 0x4 (  4) | DUT =    460 | Exp =    460
+[PASS] [RANDOM      ] Test #160  | opa = 0x50 (unformatted write to stdout
+) | opb = 0x1 (  1) | DUT =     80 | Exp =     80
+[PASS] [RANDOM      ] Test #161  | opa = 0x58 (unformatted write to stdout
+) | opb = 0x3 (  3) | DUT =    264 | Exp =    264
+[PASS] [RANDOM      ] Test #162  | opa = 0x1b (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =    -27 | Exp =    -27
+[PASS] [RANDOM      ] Test #163  | opa = 0xd5 (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =   -213 | Exp =   -213
+[PASS] [RANDOM      ] Test #164  | opa = 0xe2 (unformatted write to stdout
+) | opb = 0x5 (  5) | DUT =   1130 | Exp =   1130
+[PASS] [RANDOM      ] Test #165  | opa = 0x8e (unformatted write to stdout
+) | opb = 0x1 (  1) | DUT =    142 | Exp =    142
+[PASS] [RANDOM      ] Test #166  | opa = 0x5 (unformatted write to stdout
+) | opb = 0x2 (  2) | DUT =     10 | Exp =     10
+[PASS] [RANDOM      ] Test #167  | opa = 0x0 (unformatted write to stdout
+) | opb = 0x0 (  0) | DUT =      0 | Exp =      0
+[PASS] [RANDOM      ] Test #168  | opa = 0xa7 (unformatted write to stdout
+) | opb = 0x8 ( -8) | DUT =  -1336 | Exp =  -1336
+[PASS] [RANDOM      ] Test #169  | opa = 0xce (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -412 | Exp =   -412
+[PASS] [RANDOM      ] Test #170  | opa = 0x57 (unformatted write to stdout
+) | opb = 0xb ( -5) | DUT =   -435 | Exp =   -435
+[PASS] [RANDOM      ] Test #171  | opa = 0xa7 (unformatted write to stdout
+) | opb = 0x8 ( -8) | DUT =  -1336 | Exp =  -1336
+[PASS] [RANDOM      ] Test #172  | opa = 0x7a (unformatted write to stdout
+) | opb = 0x6 (  6) | DUT =    732 | Exp =    732
+[PASS] [RANDOM      ] Test #173  | opa = 0xb2 (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =   -178 | Exp =   -178
+[PASS] [RANDOM      ] Test #174  | opa = 0x4d (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =    -77 | Exp =    -77
+[PASS] [RANDOM      ] Test #175  | opa = 0x5c (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -184 | Exp =   -184
+[PASS] [RANDOM      ] Test #176  | opa = 0x17 (unformatted write to stdout
+) | opb = 0x5 (  5) | DUT =    115 | Exp =    115
+[PASS] [RANDOM      ] Test #177  | opa = 0xdf (unformatted write to stdout
+) | opb = 0xd ( -3) | DUT =   -669 | Exp =   -669
+[PASS] [RANDOM      ] Test #178  | opa = 0xf3 (unformatted write to stdout
+) | opb = 0x7 (  7) | DUT =   1701 | Exp =   1701
+[PASS] [RANDOM      ] Test #179  | opa = 0xde (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =  -1332 | Exp =  -1332
+[PASS] [RANDOM      ] Test #180  | opa = 0x40 (unformatted write to stdout
+) | opb = 0x8 ( -8) | DUT =   -512 | Exp =   -512
+[PASS] [RANDOM      ] Test #181  | opa = 0xf6 (unformatted write to stdout
+) | opb = 0xd ( -3) | DUT =   -738 | Exp =   -738
+[PASS] [RANDOM      ] Test #182  | opa = 0xa3 (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =   -652 | Exp =   -652
+[PASS] [RANDOM      ] Test #183  | opa = 0x1b (unformatted write to stdout
+) | opb = 0x2 (  2) | DUT =     54 | Exp =     54
+[PASS] [RANDOM      ] Test #184  | opa = 0x1e (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =    -60 | Exp =    -60
+[PASS] [RANDOM      ] Test #185  | opa = 0x25 (unformatted write to stdout
+) | opb = 0xd ( -3) | DUT =   -111 | Exp =   -111
+[PASS] [RANDOM      ] Test #186  | opa = 0xbc (unformatted write to stdout
+) | opb = 0x0 (  0) | DUT =      0 | Exp =      0
+[PASS] [RANDOM      ] Test #187  | opa = 0xdb (unformatted write to stdout
+) | opb = 0x1 (  1) | DUT =    219 | Exp =    219
+[PASS] [RANDOM      ] Test #188  | opa = 0xc7 (unformatted write to stdout
+) | opb = 0x8 ( -8) | DUT =  -1592 | Exp =  -1592
+[PASS] [RANDOM      ] Test #189  | opa = 0x6f (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =   -111 | Exp =   -111
+[PASS] [RANDOM      ] Test #190  | opa = 0x85 (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =   -133 | Exp =   -133
+[PASS] [RANDOM      ] Test #191  | opa = 0x24 (unformatted write to stdout
+) | opb = 0x2 (  2) | DUT =     72 | Exp =     72
+[PASS] [RANDOM      ] Test #192  | opa = 0xff (unformatted write to stdout
+) | opb = 0x1 (  1) | DUT =    255 | Exp =    255
+[PASS] [RANDOM      ] Test #193  | opa = 0xa6 (unformatted write to stdout
+) | opb = 0x1 (  1) | DUT =    166 | Exp =    166
+[PASS] [RANDOM      ] Test #194  | opa = 0x40 (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -128 | Exp =   -128
+[PASS] [RANDOM      ] Test #195  | opa = 0x45 (unformatted write to stdout
+) | opb = 0x3 (  3) | DUT =    207 | Exp =    207
+[PASS] [RANDOM      ] Test #196  | opa = 0x1f (unformatted write to stdout
+) | opb = 0x9 ( -7) | DUT =   -217 | Exp =   -217
+[PASS] [RANDOM      ] Test #197  | opa = 0x12 (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =   -108 | Exp =   -108
+[PASS] [RANDOM      ] Test #198  | opa = 0x6f (unformatted write to stdout
+) | opb = 0x0 (  0) | DUT =      0 | Exp =      0
+[PASS] [RANDOM      ] Test #199  | opa = 0x9c (unformatted write to stdout
+) | opb = 0x1 (  1) | DUT =    156 | Exp =    156
+[PASS] [RANDOM      ] Test #200  | opa = 0x34 (unformatted write to stdout
+) | opb = 0x2 (  2) | DUT =    104 | Exp =    104
+[PASS] [RANDOM      ] Test #201  | opa = 0xc7 (unformatted write to stdout
+) | opb = 0xb ( -5) | DUT =   -995 | Exp =   -995
+[PASS] [RANDOM      ] Test #202  | opa = 0x42 (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =    -66 | Exp =    -66
+[PASS] [RANDOM      ] Test #203  | opa = 0xfd (unformatted write to stdout
+) | opb = 0x3 (  3) | DUT =    759 | Exp =    759
+[PASS] [RANDOM      ] Test #204  | opa = 0x49 (unformatted write to stdout
+) | opb = 0x5 (  5) | DUT =    365 | Exp =    365
+[PASS] [RANDOM      ] Test #205  | opa = 0xad (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =   -173 | Exp =   -173
+[PASS] [RANDOM      ] Test #206  | opa = 0x44 (unformatted write to stdout
+) | opb = 0x6 (  6) | DUT =    408 | Exp =    408
+[PASS] [RANDOM      ] Test #207  | opa = 0xdb (unformatted write to stdout
+) | opb = 0x0 (  0) | DUT =      0 | Exp =      0
+[PASS] [RANDOM      ] Test #208  | opa = 0xdf (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -446 | Exp =   -446
+[PASS] [RANDOM      ] Test #209  | opa = 0x39 (unformatted write to stdout
+) | opb = 0x3 (  3) | DUT =    171 | Exp =    171
+[PASS] [RANDOM      ] Test #210  | opa = 0x26 (unformatted write to stdout
+) | opb = 0xb ( -5) | DUT =   -190 | Exp =   -190
+[PASS] [RANDOM      ] Test #211  | opa = 0xd (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =    -78 | Exp =    -78
+[PASS] [RANDOM      ] Test #212  | opa = 0xa2 (unformatted write to stdout
+) | opb = 0xd ( -3) | DUT =   -486 | Exp =   -486
+[PASS] [RANDOM      ] Test #213  | opa = 0xd2 (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -420 | Exp =   -420
+[PASS] [RANDOM      ] Test #214  | opa = 0xc5 (unformatted write to stdout
+) | opb = 0x7 (  7) | DUT =   1379 | Exp =   1379
+[PASS] [RANDOM      ] Test #215  | opa = 0x58 (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =   -352 | Exp =   -352
+[PASS] [RANDOM      ] Test #216  | opa = 0x38 (unformatted write to stdout
+) | opb = 0x5 (  5) | DUT =    280 | Exp =    280
+[PASS] [RANDOM      ] Test #217  | opa = 0xe9 (unformatted write to stdout
+) | opb = 0xd ( -3) | DUT =   -699 | Exp =   -699
+[PASS] [RANDOM      ] Test #218  | opa = 0x62 (unformatted write to stdout
+) | opb = 0x1 (  1) | DUT =     98 | Exp =     98
+[PASS] [RANDOM      ] Test #219  | opa = 0x97 (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =   -604 | Exp =   -604
+[PASS] [RANDOM      ] Test #220  | opa = 0x57 (unformatted write to stdout
+) | opb = 0x3 (  3) | DUT =    261 | Exp =    261
+[PASS] [RANDOM      ] Test #221  | opa = 0xc5 (unformatted write to stdout
+) | opb = 0x0 (  0) | DUT =      0 | Exp =      0
+[PASS] [RANDOM      ] Test #222  | opa = 0xfd (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =  -1518 | Exp =  -1518
+[PASS] [RANDOM      ] Test #223  | opa = 0x9d (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =   -157 | Exp =   -157
+[PASS] [RANDOM      ] Test #224  | opa = 0xfc (unformatted write to stdout
+) | opb = 0x9 ( -7) | DUT =  -1764 | Exp =  -1764
+[PASS] [RANDOM      ] Test #225  | opa = 0xf3 (unformatted write to stdout
+) | opb = 0x0 (  0) | DUT =      0 | Exp =      0
+[PASS] [RANDOM      ] Test #226  | opa = 0xf0 (unformatted write to stdout
+) | opb = 0x3 (  3) | DUT =    720 | Exp =    720
+[PASS] [RANDOM      ] Test #227  | opa = 0xc6 (unformatted write to stdout
+) | opb = 0x1 (  1) | DUT =    198 | Exp =    198
+[PASS] [RANDOM      ] Test #228  | opa = 0xd6 (unformatted write to stdout
+) | opb = 0x1 (  1) | DUT =    214 | Exp =    214
+[PASS] [RANDOM      ] Test #229  | opa = 0x72 (unformatted write to stdout
+) | opb = 0xd ( -3) | DUT =   -342 | Exp =   -342
+[PASS] [RANDOM      ] Test #230  | opa = 0xb0 (unformatted write to stdout
+) | opb = 0x0 (  0) | DUT =      0 | Exp =      0
+[PASS] [RANDOM      ] Test #231  | opa = 0x33 (unformatted write to stdout
+) | opb = 0xd ( -3) | DUT =   -153 | Exp =   -153
+[PASS] [RANDOM      ] Test #232  | opa = 0xe2 (unformatted write to stdout
+) | opb = 0x3 (  3) | DUT =    678 | Exp =    678
+[PASS] [RANDOM      ] Test #233  | opa = 0x8c (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -280 | Exp =   -280
+[PASS] [RANDOM      ] Test #234  | opa = 0xbe (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =   -760 | Exp =   -760
+[PASS] [RANDOM      ] Test #235  | opa = 0xbd (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =   -756 | Exp =   -756
+[PASS] [RANDOM      ] Test #236  | opa = 0x39 (unformatted write to stdout
+) | opb = 0x0 (  0) | DUT =      0 | Exp =      0
+[PASS] [RANDOM      ] Test #237  | opa = 0x58 (unformatted write to stdout
+) | opb = 0x3 (  3) | DUT =    264 | Exp =    264
+[PASS] [RANDOM      ] Test #238  | opa = 0xce (unformatted write to stdout
+) | opb = 0x9 ( -7) | DUT =  -1442 | Exp =  -1442
+[PASS] [RANDOM      ] Test #239  | opa = 0x94 (unformatted write to stdout
+) | opb = 0x5 (  5) | DUT =    740 | Exp =    740
+[PASS] [RANDOM      ] Test #240  | opa = 0x6 (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =    -24 | Exp =    -24
+[PASS] [RANDOM      ] Test #241  | opa = 0xf8 (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =  -1488 | Exp =  -1488
+[PASS] [RANDOM      ] Test #242  | opa = 0x19 (unformatted write to stdout
+) | opb = 0x8 ( -8) | DUT =   -200 | Exp =   -200
+[PASS] [RANDOM      ] Test #243  | opa = 0x8a (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =   -138 | Exp =   -138
+[PASS] [RANDOM      ] Test #244  | opa = 0xb8 (unformatted write to stdout
+) | opb = 0xd ( -3) | DUT =   -552 | Exp =   -552
+[PASS] [RANDOM      ] Test #245  | opa = 0x7c (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =   -496 | Exp =   -496
+[PASS] [RANDOM      ] Test #246  | opa = 0xe2 (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -452 | Exp =   -452
+[PASS] [RANDOM      ] Test #247  | opa = 0x1a (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =   -156 | Exp =   -156
+[PASS] [RANDOM      ] Test #248  | opa = 0x5a (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -180 | Exp =   -180
+[PASS] [RANDOM      ] Test #249  | opa = 0x79 (unformatted write to stdout
+) | opb = 0x1 (  1) | DUT =    121 | Exp =    121
+[PASS] [RANDOM      ] Test #250  | opa = 0x25 (unformatted write to stdout
+) | opb = 0x6 (  6) | DUT =    222 | Exp =    222
+[PASS] [RANDOM      ] Test #251  | opa = 0x11 (unformatted write to stdout
+) | opb = 0x6 (  6) | DUT =    102 | Exp =    102
+[PASS] [RANDOM      ] Test #252  | opa = 0x1d (unformatted write to stdout
+) | opb = 0x3 (  3) | DUT =     87 | Exp =     87
+[PASS] [RANDOM      ] Test #253  | opa = 0x55 (unformatted write to stdout
+) | opb = 0x6 (  6) | DUT =    510 | Exp =    510
+[PASS] [RANDOM      ] Test #254  | opa = 0x81 (unformatted write to stdout
+) | opb = 0x4 (  4) | DUT =    516 | Exp =    516
+[PASS] [RANDOM      ] Test #255  | opa = 0xf2 (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -484 | Exp =   -484
+[PASS] [RANDOM      ] Test #256  | opa = 0x18 (unformatted write to stdout
+) | opb = 0x3 (  3) | DUT =     72 | Exp =     72
+[PASS] [RANDOM      ] Test #257  | opa = 0x3b (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =   -236 | Exp =   -236
+[PASS] [RANDOM      ] Test #258  | opa = 0x46 (unformatted write to stdout
+) | opb = 0x7 (  7) | DUT =    490 | Exp =    490
+[PASS] [RANDOM      ] Test #259  | opa = 0x1 (unformatted write to stdout
+) | opb = 0xb ( -5) | DUT =     -5 | Exp =     -5
+[PASS] [RANDOM      ] Test #260  | opa = 0x2f (unformatted write to stdout
+) | opb = 0x0 (  0) | DUT =      0 | Exp =      0
+[PASS] [RANDOM      ] Test #261  | opa = 0xc3 (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =   -780 | Exp =   -780
+[PASS] [RANDOM      ] Test #262  | opa = 0xbc (unformatted write to stdout
+) | opb = 0x9 ( -7) | DUT =  -1316 | Exp =  -1316
+[PASS] [RANDOM      ] Test #263  | opa = 0x8 (unformatted write to stdout
+) | opb = 0x3 (  3) | DUT =     24 | Exp =     24
+[PASS] [RANDOM      ] Test #264  | opa = 0x30 (unformatted write to stdout
+) | opb = 0x5 (  5) | DUT =    240 | Exp =    240
+[PASS] [RANDOM      ] Test #265  | opa = 0x4a (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -148 | Exp =   -148
+[PASS] [RANDOM      ] Test #266  | opa = 0x94 (unformatted write to stdout
+) | opb = 0xd ( -3) | DUT =   -444 | Exp =   -444
+[PASS] [RANDOM      ] Test #267  | opa = 0xc0 (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =   -192 | Exp =   -192
+[PASS] [RANDOM      ] Test #268  | opa = 0x22 (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =   -136 | Exp =   -136
+[PASS] [RANDOM      ] Test #269  | opa = 0xf8 (unformatted write to stdout
+) | opb = 0x8 ( -8) | DUT =  -1984 | Exp =  -1984
+[PASS] [RANDOM      ] Test #270  | opa = 0x8e (unformatted write to stdout
+) | opb = 0x3 (  3) | DUT =    426 | Exp =    426
+[PASS] [RANDOM      ] Test #271  | opa = 0xf8 (unformatted write to stdout
+) | opb = 0x5 (  5) | DUT =   1240 | Exp =   1240
+[PASS] [RANDOM      ] Test #272  | opa = 0xba (unformatted write to stdout
+) | opb = 0xb ( -5) | DUT =   -930 | Exp =   -930
+[PASS] [RANDOM      ] Test #273  | opa = 0x7a (unformatted write to stdout
+) | opb = 0x5 (  5) | DUT =    610 | Exp =    610
+[PASS] [RANDOM      ] Test #274  | opa = 0x49 (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =   -438 | Exp =   -438
+[PASS] [RANDOM      ] Test #275  | opa = 0x5e (unformatted write to stdout
+) | opb = 0x0 (  0) | DUT =      0 | Exp =      0
+[PASS] [RANDOM      ] Test #276  | opa = 0xc (unformatted write to stdout
+) | opb = 0x1 (  1) | DUT =     12 | Exp =     12
+[PASS] [RANDOM      ] Test #277  | opa = 0x6a (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -212 | Exp =   -212
+[PASS] [RANDOM      ] Test #278  | opa = 0x4b (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =    -75 | Exp =    -75
+[PASS] [RANDOM      ] Test #279  | opa = 0x2 (unformatted write to stdout
+) | opb = 0x2 (  2) | DUT =      4 | Exp =      4
+[PASS] [RANDOM      ] Test #280  | opa = 0x64 (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =   -600 | Exp =   -600
+[PASS] [RANDOM      ] Test #281  | opa = 0x61 (unformatted write to stdout
+) | opb = 0x5 (  5) | DUT =    485 | Exp =    485
+[PASS] [RANDOM      ] Test #282  | opa = 0x32 (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =    -50 | Exp =    -50
+[PASS] [RANDOM      ] Test #283  | opa = 0x83 (unformatted write to stdout
+) | opb = 0x0 (  0) | DUT =      0 | Exp =      0
+[PASS] [RANDOM      ] Test #284  | opa = 0x50 (unformatted write to stdout
+) | opb = 0x3 (  3) | DUT =    240 | Exp =    240
+[PASS] [RANDOM      ] Test #285  | opa = 0xc5 (unformatted write to stdout
+) | opb = 0x4 (  4) | DUT =    788 | Exp =    788
+[PASS] [RANDOM      ] Test #286  | opa = 0x15 (unformatted write to stdout
+) | opb = 0x1 (  1) | DUT =     21 | Exp =     21
+[PASS] [RANDOM      ] Test #287  | opa = 0xf3 (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -486 | Exp =   -486
+[PASS] [RANDOM      ] Test #288  | opa = 0xe1 (unformatted write to stdout
+) | opb = 0x2 (  2) | DUT =    450 | Exp =    450
+[PASS] [RANDOM      ] Test #289  | opa = 0x3e (unformatted write to stdout
+) | opb = 0xd ( -3) | DUT =   -186 | Exp =   -186
+[PASS] [RANDOM      ] Test #290  | opa = 0x1e (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =   -180 | Exp =   -180
+[PASS] [RANDOM      ] Test #291  | opa = 0x60 (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =   -384 | Exp =   -384
+[PASS] [RANDOM      ] Test #292  | opa = 0x10 (unformatted write to stdout
+) | opb = 0x2 (  2) | DUT =     32 | Exp =     32
+[PASS] [RANDOM      ] Test #293  | opa = 0xdb (unformatted write to stdout
+) | opb = 0x3 (  3) | DUT =    657 | Exp =    657
+[PASS] [RANDOM      ] Test #294  | opa = 0x48 (unformatted write to stdout
+) | opb = 0x1 (  1) | DUT =     72 | Exp =     72
+[PASS] [RANDOM      ] Test #295  | opa = 0x1b (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =   -108 | Exp =   -108
+[PASS] [RANDOM      ] Test #296  | opa = 0x5e (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =    -94 | Exp =    -94
+[PASS] [RANDOM      ] Test #297  | opa = 0xef (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -478 | Exp =   -478
+[PASS] [RANDOM      ] Test #298  | opa = 0x52 (unformatted write to stdout
+) | opb = 0x6 (  6) | DUT =    492 | Exp =    492
+[PASS] [RANDOM      ] Test #299  | opa = 0x9f (unformatted write to stdout
+) | opb = 0x4 (  4) | DUT =    636 | Exp =    636
+[PASS] [RANDOM      ] Test #300  | opa = 0x9d (unformatted write to stdout
+) | opb = 0x9 ( -7) | DUT =  -1099 | Exp =  -1099
+[PASS] [RANDOM      ] Test #301  | opa = 0x91 (unformatted write to stdout
+) | opb = 0x6 (  6) | DUT =    870 | Exp =    870
+[PASS] [RANDOM      ] Test #302  | opa = 0xe7 (unformatted write to stdout
+) | opb = 0xd ( -3) | DUT =   -693 | Exp =   -693
+[PASS] [RANDOM      ] Test #303  | opa = 0x3a (unformatted write to stdout
+) | opb = 0x6 (  6) | DUT =    348 | Exp =    348
+[PASS] [RANDOM      ] Test #304  | opa = 0xec (unformatted write to stdout
+) | opb = 0x7 (  7) | DUT =   1652 | Exp =   1652
+[PASS] [RANDOM      ] Test #305  | opa = 0xdd (unformatted write to stdout
+) | opb = 0x2 (  2) | DUT =    442 | Exp =    442
+[PASS] [RANDOM      ] Test #306  | opa = 0xf1 (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =  -1446 | Exp =  -1446
+[PASS] [RANDOM      ] Test #307  | opa = 0x53 (unformatted write to stdout
+) | opb = 0x0 (  0) | DUT =      0 | Exp =      0
+[PASS] [RANDOM      ] Test #308  | opa = 0xe5 (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =   -916 | Exp =   -916
+[PASS] [RANDOM      ] Test #309  | opa = 0xd2 (unformatted write to stdout
+) | opb = 0x9 ( -7) | DUT =  -1470 | Exp =  -1470
+[PASS] [RANDOM      ] Test #310  | opa = 0x16 (unformatted write to stdout
+) | opb = 0x5 (  5) | DUT =    110 | Exp =    110
+[PASS] [RANDOM      ] Test #311  | opa = 0x71 (unformatted write to stdout
+) | opb = 0x2 (  2) | DUT =    226 | Exp =    226
+[PASS] [RANDOM      ] Test #312  | opa = 0xf5 (unformatted write to stdout
+) | opb = 0x7 (  7) | DUT =   1715 | Exp =   1715
+[PASS] [RANDOM      ] Test #313  | opa = 0xef (unformatted write to stdout
+) | opb = 0x4 (  4) | DUT =    956 | Exp =    956
+[PASS] [RANDOM      ] Test #314  | opa = 0x73 (unformatted write to stdout
+) | opb = 0x9 ( -7) | DUT =   -805 | Exp =   -805
+[PASS] [RANDOM      ] Test #315  | opa = 0xe6 (unformatted write to stdout
+) | opb = 0x9 ( -7) | DUT =  -1610 | Exp =  -1610
+[PASS] [RANDOM      ] Test #316  | opa = 0xe9 (unformatted write to stdout
+) | opb = 0x8 ( -8) | DUT =  -1864 | Exp =  -1864
+[PASS] [RANDOM      ] Test #317  | opa = 0x7b (unformatted write to stdout
+) | opb = 0x7 (  7) | DUT =    861 | Exp =    861
+[PASS] [RANDOM      ] Test #318  | opa = 0x7e (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =   -504 | Exp =   -504
+[PASS] [RANDOM      ] Test #319  | opa = 0x32 (unformatted write to stdout
+) | opb = 0x9 ( -7) | DUT =   -350 | Exp =   -350
+[PASS] [RANDOM      ] Test #320  | opa = 0xa8 (unformatted write to stdout
+) | opb = 0x8 ( -8) | DUT =  -1344 | Exp =  -1344
+[PASS] [RANDOM      ] Test #321  | opa = 0x78 (unformatted write to stdout
+) | opb = 0x8 ( -8) | DUT =   -960 | Exp =   -960
+[PASS] [RANDOM      ] Test #322  | opa = 0x15 (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =    -84 | Exp =    -84
+[PASS] [RANDOM      ] Test #323  | opa = 0xd (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =    -13 | Exp =    -13
+[PASS] [RANDOM      ] Test #324  | opa = 0x23 (unformatted write to stdout
+) | opb = 0x2 (  2) | DUT =     70 | Exp =     70
+[PASS] [RANDOM      ] Test #325  | opa = 0x51 (unformatted write to stdout
+) | opb = 0xd ( -3) | DUT =   -243 | Exp =   -243
+[PASS] [RANDOM      ] Test #326  | opa = 0xc6 (unformatted write to stdout
+) | opb = 0x6 (  6) | DUT =   1188 | Exp =   1188
+[PASS] [RANDOM      ] Test #327  | opa = 0x2f (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =    -47 | Exp =    -47
+[PASS] [RANDOM      ] Test #328  | opa = 0x6b (unformatted write to stdout
+) | opb = 0x5 (  5) | DUT =    535 | Exp =    535
+[PASS] [RANDOM      ] Test #329  | opa = 0x29 (unformatted write to stdout
+) | opb = 0xd ( -3) | DUT =   -123 | Exp =   -123
+[PASS] [RANDOM      ] Test #330  | opa = 0x42 (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =   -396 | Exp =   -396
+[PASS] [RANDOM      ] Test #331  | opa = 0xb5 (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =   -181 | Exp =   -181
+[PASS] [RANDOM      ] Test #332  | opa = 0x0 (unformatted write to stdout
+) | opb = 0x4 (  4) | DUT =      0 | Exp =      0
+[PASS] [RANDOM      ] Test #333  | opa = 0xec (unformatted write to stdout
+) | opb = 0x1 (  1) | DUT =    236 | Exp =    236
+[PASS] [RANDOM      ] Test #334  | opa = 0xff (unformatted write to stdout
+) | opb = 0x8 ( -8) | DUT =  -2040 | Exp =  -2040
+[PASS] [RANDOM      ] Test #335  | opa = 0x4b (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =   -450 | Exp =   -450
+[PASS] [RANDOM      ] Test #336  | opa = 0x4c (unformatted write to stdout
+) | opb = 0x4 (  4) | DUT =    304 | Exp =    304
+[PASS] [RANDOM      ] Test #337  | opa = 0xfe (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =  -1524 | Exp =  -1524
+[PASS] [RANDOM      ] Test #338  | opa = 0xc (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =    -24 | Exp =    -24
+[PASS] [RANDOM      ] Test #339  | opa = 0xf3 (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -486 | Exp =   -486
+[PASS] [RANDOM      ] Test #340  | opa = 0x4c (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -152 | Exp =   -152
+[PASS] [RANDOM      ] Test #341  | opa = 0xa9 (unformatted write to stdout
+) | opb = 0xb ( -5) | DUT =   -845 | Exp =   -845
+[PASS] [RANDOM      ] Test #342  | opa = 0x15 (unformatted write to stdout
+) | opb = 0x6 (  6) | DUT =    126 | Exp =    126
+[PASS] [RANDOM      ] Test #343  | opa = 0x8a (unformatted write to stdout
+) | opb = 0x8 ( -8) | DUT =  -1104 | Exp =  -1104
+[PASS] [RANDOM      ] Test #344  | opa = 0x6e (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -220 | Exp =   -220
+[PASS] [RANDOM      ] Test #345  | opa = 0x31 (unformatted write to stdout
+) | opb = 0x2 (  2) | DUT =     98 | Exp =     98
+[PASS] [RANDOM      ] Test #346  | opa = 0x96 (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =   -900 | Exp =   -900
+[PASS] [RANDOM      ] Test #347  | opa = 0xf5 (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =  -1470 | Exp =  -1470
+[PASS] [RANDOM      ] Test #348  | opa = 0x9d (unformatted write to stdout
+) | opb = 0x7 (  7) | DUT =   1099 | Exp =   1099
+[PASS] [RANDOM      ] Test #349  | opa = 0x9b (unformatted write to stdout
+) | opb = 0xb ( -5) | DUT =   -775 | Exp =   -775
+[PASS] [RANDOM      ] Test #350  | opa = 0x3e (unformatted write to stdout
+) | opb = 0x0 (  0) | DUT =      0 | Exp =      0
+[PASS] [RANDOM      ] Test #351  | opa = 0x1 (unformatted write to stdout
+) | opb = 0x8 ( -8) | DUT =     -8 | Exp =     -8
+[PASS] [RANDOM      ] Test #352  | opa = 0x7c (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -248 | Exp =   -248
+[PASS] [RANDOM      ] Test #353  | opa = 0x28 (unformatted write to stdout
+) | opb = 0xb ( -5) | DUT =   -200 | Exp =   -200
+[PASS] [RANDOM      ] Test #354  | opa = 0x84 (unformatted write to stdout
+) | opb = 0x9 ( -7) | DUT =   -924 | Exp =   -924
+[PASS] [RANDOM      ] Test #355  | opa = 0xf2 (unformatted write to stdout
+) | opb = 0x6 (  6) | DUT =   1452 | Exp =   1452
+[PASS] [RANDOM      ] Test #356  | opa = 0xce (unformatted write to stdout
+) | opb = 0x5 (  5) | DUT =   1030 | Exp =   1030
+[PASS] [RANDOM      ] Test #357  | opa = 0x78 (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -240 | Exp =   -240
+[PASS] [RANDOM      ] Test #358  | opa = 0x6b (unformatted write to stdout
+) | opb = 0x7 (  7) | DUT =    749 | Exp =    749
+[PASS] [RANDOM      ] Test #359  | opa = 0xc5 (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -394 | Exp =   -394
+[PASS] [RANDOM      ] Test #360  | opa = 0x17 (unformatted write to stdout
+) | opb = 0x6 (  6) | DUT =    138 | Exp =    138
+[PASS] [RANDOM      ] Test #361  | opa = 0x66 (unformatted write to stdout
+) | opb = 0x6 (  6) | DUT =    612 | Exp =    612
+[PASS] [RANDOM      ] Test #362  | opa = 0x71 (unformatted write to stdout
+) | opb = 0x7 (  7) | DUT =    791 | Exp =    791
+[PASS] [RANDOM      ] Test #363  | opa = 0x1b (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =    -27 | Exp =    -27
+[PASS] [RANDOM      ] Test #364  | opa = 0x65 (unformatted write to stdout
+) | opb = 0x5 (  5) | DUT =    505 | Exp =    505
+[PASS] [RANDOM      ] Test #365  | opa = 0x8c (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =   -840 | Exp =   -840
+[PASS] [RANDOM      ] Test #366  | opa = 0xb8 (unformatted write to stdout
+) | opb = 0x6 (  6) | DUT =   1104 | Exp =   1104
+[PASS] [RANDOM      ] Test #367  | opa = 0xdc (unformatted write to stdout
+) | opb = 0xd ( -3) | DUT =   -660 | Exp =   -660
+[PASS] [RANDOM      ] Test #368  | opa = 0x48 (unformatted write to stdout
+) | opb = 0x6 (  6) | DUT =    432 | Exp =    432
+[PASS] [RANDOM      ] Test #369  | opa = 0x7b (unformatted write to stdout
+) | opb = 0x4 (  4) | DUT =    492 | Exp =    492
+[PASS] [RANDOM      ] Test #370  | opa = 0x57 (unformatted write to stdout
+) | opb = 0x5 (  5) | DUT =    435 | Exp =    435
+[PASS] [RANDOM      ] Test #371  | opa = 0x87 (unformatted write to stdout
+) | opb = 0x3 (  3) | DUT =    405 | Exp =    405
+[PASS] [RANDOM      ] Test #372  | opa = 0x6 (unformatted write to stdout
+) | opb = 0x3 (  3) | DUT =     18 | Exp =     18
+[PASS] [RANDOM      ] Test #373  | opa = 0xa6 (unformatted write to stdout
+) | opb = 0x0 (  0) | DUT =      0 | Exp =      0
+[PASS] [RANDOM      ] Test #374  | opa = 0xdd (unformatted write to stdout
+) | opb = 0x4 (  4) | DUT =    884 | Exp =    884
+[PASS] [RANDOM      ] Test #375  | opa = 0x2e (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =   -184 | Exp =   -184
+[PASS] [RANDOM      ] Test #376  | opa = 0xee (unformatted write to stdout
+) | opb = 0x3 (  3) | DUT =    714 | Exp =    714
+[PASS] [RANDOM      ] Test #377  | opa = 0xf5 (unformatted write to stdout
+) | opb = 0x0 (  0) | DUT =      0 | Exp =      0
+[PASS] [RANDOM      ] Test #378  | opa = 0x4 (unformatted write to stdout
+) | opb = 0x8 ( -8) | DUT =    -32 | Exp =    -32
+[PASS] [RANDOM      ] Test #379  | opa = 0x28 (unformatted write to stdout
+) | opb = 0x9 ( -7) | DUT =   -280 | Exp =   -280
+[PASS] [RANDOM      ] Test #380  | opa = 0xe7 (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =   -924 | Exp =   -924
+[PASS] [RANDOM      ] Test #381  | opa = 0xd (unformatted write to stdout
+) | opb = 0x5 (  5) | DUT =     65 | Exp =     65
+[PASS] [RANDOM      ] Test #382  | opa = 0x99 (unformatted write to stdout
+) | opb = 0x2 (  2) | DUT =    306 | Exp =    306
+[PASS] [RANDOM      ] Test #383  | opa = 0x71 (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -226 | Exp =   -226
+[PASS] [RANDOM      ] Test #384  | opa = 0x2d (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =    -45 | Exp =    -45
+[PASS] [RANDOM      ] Test #385  | opa = 0x4b (unformatted write to stdout
+) | opb = 0x4 (  4) | DUT =    300 | Exp =    300
+[PASS] [RANDOM      ] Test #386  | opa = 0x89 (unformatted write to stdout
+) | opb = 0x6 (  6) | DUT =    822 | Exp =    822
+[PASS] [RANDOM      ] Test #387  | opa = 0xb8 (unformatted write to stdout
+) | opb = 0x4 (  4) | DUT =    736 | Exp =    736
+[PASS] [RANDOM      ] Test #388  | opa = 0x3a (unformatted write to stdout
+) | opb = 0xd ( -3) | DUT =   -174 | Exp =   -174
+[PASS] [RANDOM      ] Test #389  | opa = 0x68 (unformatted write to stdout
+) | opb = 0x9 ( -7) | DUT =   -728 | Exp =   -728
+[PASS] [RANDOM      ] Test #390  | opa = 0x2a (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =   -252 | Exp =   -252
+[PASS] [RANDOM      ] Test #391  | opa = 0x1f (unformatted write to stdout
+) | opb = 0x8 ( -8) | DUT =   -248 | Exp =   -248
+[PASS] [RANDOM      ] Test #392  | opa = 0xe3 (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =   -908 | Exp =   -908
+[PASS] [RANDOM      ] Test #393  | opa = 0xd4 (unformatted write to stdout
+) | opb = 0x0 (  0) | DUT =      0 | Exp =      0
+[PASS] [RANDOM      ] Test #394  | opa = 0xaa (unformatted write to stdout
+) | opb = 0x6 (  6) | DUT =   1020 | Exp =   1020
+[PASS] [RANDOM      ] Test #395  | opa = 0xaa (unformatted write to stdout
+) | opb = 0x1 (  1) | DUT =    170 | Exp =    170
+[PASS] [RANDOM      ] Test #396  | opa = 0xa1 (unformatted write to stdout
+) | opb = 0x1 (  1) | DUT =    161 | Exp =    161
+[PASS] [RANDOM      ] Test #397  | opa = 0xb8 (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -368 | Exp =   -368
+[PASS] [RANDOM      ] Test #398  | opa = 0xb7 (unformatted write to stdout
+) | opb = 0x0 (  0) | DUT =      0 | Exp =      0
+[PASS] [RANDOM      ] Test #399  | opa = 0x60 (unformatted write to stdout
+) | opb = 0x9 ( -7) | DUT =   -672 | Exp =   -672
+[PASS] [RANDOM      ] Test #400  | opa = 0x12 (unformatted write to stdout
+) | opb = 0xb ( -5) | DUT =    -90 | Exp =    -90
+[PASS] [RANDOM      ] Test #401  | opa = 0xb3 (unformatted write to stdout
+) | opb = 0x2 (  2) | DUT =    358 | Exp =    358
+[PASS] [RANDOM      ] Test #402  | opa = 0x4d (unformatted write to stdout
+) | opb = 0xd ( -3) | DUT =   -231 | Exp =   -231
+[PASS] [RANDOM      ] Test #403  | opa = 0x19 (unformatted write to stdout
+) | opb = 0x8 ( -8) | DUT =   -200 | Exp =   -200
+[PASS] [RANDOM      ] Test #404  | opa = 0x9d (unformatted write to stdout
+) | opb = 0x1 (  1) | DUT =    157 | Exp =    157
+[PASS] [RANDOM      ] Test #405  | opa = 0x3f (unformatted write to stdout
+) | opb = 0x0 (  0) | DUT =      0 | Exp =      0
+[PASS] [RANDOM      ] Test #406  | opa = 0xc0 (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -384 | Exp =   -384
+[PASS] [RANDOM      ] Test #407  | opa = 0xfe (unformatted write to stdout
+) | opb = 0x2 (  2) | DUT =    508 | Exp =    508
+[PASS] [RANDOM      ] Test #408  | opa = 0x54 (unformatted write to stdout
+) | opb = 0x8 ( -8) | DUT =   -672 | Exp =   -672
+[PASS] [RANDOM      ] Test #409  | opa = 0xc8 (unformatted write to stdout
+) | opb = 0xb ( -5) | DUT =  -1000 | Exp =  -1000
+[PASS] [RANDOM      ] Test #410  | opa = 0xeb (unformatted write to stdout
+) | opb = 0x2 (  2) | DUT =    470 | Exp =    470
+[PASS] [RANDOM      ] Test #411  | opa = 0xba (unformatted write to stdout
+) | opb = 0x7 (  7) | DUT =   1302 | Exp =   1302
+[PASS] [RANDOM      ] Test #412  | opa = 0xfd (unformatted write to stdout
+) | opb = 0x3 (  3) | DUT =    759 | Exp =    759
+[PASS] [RANDOM      ] Test #413  | opa = 0x75 (unformatted write to stdout
+) | opb = 0x8 ( -8) | DUT =   -936 | Exp =   -936
+[PASS] [RANDOM      ] Test #414  | opa = 0x94 (unformatted write to stdout
+) | opb = 0x3 (  3) | DUT =    444 | Exp =    444
+[PASS] [RANDOM      ] Test #415  | opa = 0x55 (unformatted write to stdout
+) | opb = 0x9 ( -7) | DUT =   -595 | Exp =   -595
+[PASS] [RANDOM      ] Test #416  | opa = 0x4b (unformatted write to stdout
+) | opb = 0xd ( -3) | DUT =   -225 | Exp =   -225
+[PASS] [RANDOM      ] Test #417  | opa = 0x9e (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =   -948 | Exp =   -948
+[PASS] [RANDOM      ] Test #418  | opa = 0x0 (unformatted write to stdout
+) | opb = 0x7 (  7) | DUT =      0 | Exp =      0
+[PASS] [RANDOM      ] Test #419  | opa = 0xc9 (unformatted write to stdout
+) | opb = 0x4 (  4) | DUT =    804 | Exp =    804
+[PASS] [RANDOM      ] Test #420  | opa = 0x4e (unformatted write to stdout
+) | opb = 0x7 (  7) | DUT =    546 | Exp =    546
+[PASS] [RANDOM      ] Test #421  | opa = 0xf6 (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =  -1476 | Exp =  -1476
+[PASS] [RANDOM      ] Test #422  | opa = 0xb8 (unformatted write to stdout
+) | opb = 0x5 (  5) | DUT =    920 | Exp =    920
+[PASS] [RANDOM      ] Test #423  | opa = 0x3f (unformatted write to stdout
+) | opb = 0x6 (  6) | DUT =    378 | Exp =    378
+[PASS] [RANDOM      ] Test #424  | opa = 0xd (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =    -13 | Exp =    -13
+[PASS] [RANDOM      ] Test #425  | opa = 0x60 (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -192 | Exp =   -192
+[PASS] [RANDOM      ] Test #426  | opa = 0x7a (unformatted write to stdout
+) | opb = 0xd ( -3) | DUT =   -366 | Exp =   -366
+[PASS] [RANDOM      ] Test #427  | opa = 0xfd (unformatted write to stdout
+) | opb = 0xb ( -5) | DUT =  -1265 | Exp =  -1265
+[PASS] [RANDOM      ] Test #428  | opa = 0x4e (unformatted write to stdout
+) | opb = 0x8 ( -8) | DUT =   -624 | Exp =   -624
+[PASS] [RANDOM      ] Test #429  | opa = 0x75 (unformatted write to stdout
+) | opb = 0x5 (  5) | DUT =    585 | Exp =    585
+[PASS] [RANDOM      ] Test #430  | opa = 0x5e (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =    -94 | Exp =    -94
+[PASS] [RANDOM      ] Test #431  | opa = 0x8 (unformatted write to stdout
+) | opb = 0x3 (  3) | DUT =     24 | Exp =     24
+[PASS] [RANDOM      ] Test #432  | opa = 0x98 (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =   -608 | Exp =   -608
+[PASS] [RANDOM      ] Test #433  | opa = 0xc2 (unformatted write to stdout
+) | opb = 0x1 (  1) | DUT =    194 | Exp =    194
+[PASS] [RANDOM      ] Test #434  | opa = 0x2a (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =    -42 | Exp =    -42
+[PASS] [RANDOM      ] Test #435  | opa = 0x73 (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =   -115 | Exp =   -115
+[PASS] [RANDOM      ] Test #436  | opa = 0x58 (unformatted write to stdout
+) | opb = 0xd ( -3) | DUT =   -264 | Exp =   -264
+[PASS] [RANDOM      ] Test #437  | opa = 0xa8 (unformatted write to stdout
+) | opb = 0xd ( -3) | DUT =   -504 | Exp =   -504
+[PASS] [RANDOM      ] Test #438  | opa = 0xd4 (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -424 | Exp =   -424
+[PASS] [RANDOM      ] Test #439  | opa = 0x5e (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =   -564 | Exp =   -564
+[PASS] [RANDOM      ] Test #440  | opa = 0x42 (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =   -396 | Exp =   -396
+[PASS] [RANDOM      ] Test #441  | opa = 0xf8 (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =   -992 | Exp =   -992
+[PASS] [RANDOM      ] Test #442  | opa = 0x36 (unformatted write to stdout
+) | opb = 0x4 (  4) | DUT =    216 | Exp =    216
+[PASS] [RANDOM      ] Test #443  | opa = 0xa4 (unformatted write to stdout
+) | opb = 0x2 (  2) | DUT =    328 | Exp =    328
+[PASS] [RANDOM      ] Test #444  | opa = 0xd7 (unformatted write to stdout
+) | opb = 0x2 (  2) | DUT =    430 | Exp =    430
+[PASS] [RANDOM      ] Test #445  | opa = 0x39 (unformatted write to stdout
+) | opb = 0x3 (  3) | DUT =    171 | Exp =    171
+[PASS] [RANDOM      ] Test #446  | opa = 0xf1 (unformatted write to stdout
+) | opb = 0x1 (  1) | DUT =    241 | Exp =    241
+[PASS] [RANDOM      ] Test #447  | opa = 0x3e (unformatted write to stdout
+) | opb = 0x6 (  6) | DUT =    372 | Exp =    372
+[PASS] [RANDOM      ] Test #448  | opa = 0x25 (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =   -222 | Exp =   -222
+[PASS] [RANDOM      ] Test #449  | opa = 0xa0 (unformatted write to stdout
+) | opb = 0x1 (  1) | DUT =    160 | Exp =    160
+[PASS] [RANDOM      ] Test #450  | opa = 0x83 (unformatted write to stdout
+) | opb = 0xb ( -5) | DUT =   -655 | Exp =   -655
+[PASS] [RANDOM      ] Test #451  | opa = 0x4f (unformatted write to stdout
+) | opb = 0x0 (  0) | DUT =      0 | Exp =      0
+[PASS] [RANDOM      ] Test #452  | opa = 0xb2 (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =   -712 | Exp =   -712
+[PASS] [RANDOM      ] Test #453  | opa = 0xb8 (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =   -736 | Exp =   -736
+[PASS] [RANDOM      ] Test #454  | opa = 0x87 (unformatted write to stdout
+) | opb = 0x8 ( -8) | DUT =  -1080 | Exp =  -1080
+[PASS] [RANDOM      ] Test #455  | opa = 0xe6 (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -460 | Exp =   -460
+[PASS] [RANDOM      ] Test #456  | opa = 0x95 (unformatted write to stdout
+) | opb = 0x2 (  2) | DUT =    298 | Exp =    298
+[PASS] [RANDOM      ] Test #457  | opa = 0xb8 (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =   -184 | Exp =   -184
+[PASS] [RANDOM      ] Test #458  | opa = 0x2b (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =    -43 | Exp =    -43
+[PASS] [RANDOM      ] Test #459  | opa = 0x6d (unformatted write to stdout
+) | opb = 0x2 (  2) | DUT =    218 | Exp =    218
+[PASS] [RANDOM      ] Test #460  | opa = 0xc3 (unformatted write to stdout
+) | opb = 0x8 ( -8) | DUT =  -1560 | Exp =  -1560
+[PASS] [RANDOM      ] Test #461  | opa = 0x8a (unformatted write to stdout
+) | opb = 0x3 (  3) | DUT =    414 | Exp =    414
+[PASS] [RANDOM      ] Test #462  | opa = 0xd3 (unformatted write to stdout
+) | opb = 0x6 (  6) | DUT =   1266 | Exp =   1266
+[PASS] [RANDOM      ] Test #463  | opa = 0xc6 (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =   -792 | Exp =   -792
+[PASS] [RANDOM      ] Test #464  | opa = 0x8b (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =   -139 | Exp =   -139
+[PASS] [RANDOM      ] Test #465  | opa = 0x87 (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =   -540 | Exp =   -540
+[PASS] [RANDOM      ] Test #466  | opa = 0xea (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =   -234 | Exp =   -234
+[PASS] [RANDOM      ] Test #467  | opa = 0x1f (unformatted write to stdout
+) | opb = 0x5 (  5) | DUT =    155 | Exp =    155
+[PASS] [RANDOM      ] Test #468  | opa = 0x3f (unformatted write to stdout
+) | opb = 0x6 (  6) | DUT =    378 | Exp =    378
+[PASS] [RANDOM      ] Test #469  | opa = 0xd8 (unformatted write to stdout
+) | opb = 0x8 ( -8) | DUT =  -1728 | Exp =  -1728
+[PASS] [RANDOM      ] Test #470  | opa = 0xec (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =  -1416 | Exp =  -1416
+[PASS] [RANDOM      ] Test #471  | opa = 0x6e (unformatted write to stdout
+) | opb = 0x0 (  0) | DUT =      0 | Exp =      0
+[PASS] [RANDOM      ] Test #472  | opa = 0x15 (unformatted write to stdout
+) | opb = 0x2 (  2) | DUT =     42 | Exp =     42
+[PASS] [RANDOM      ] Test #473  | opa = 0x93 (unformatted write to stdout
+) | opb = 0x8 ( -8) | DUT =  -1176 | Exp =  -1176
+[PASS] [RANDOM      ] Test #474  | opa = 0x90 (unformatted write to stdout
+) | opb = 0x5 (  5) | DUT =    720 | Exp =    720
+[PASS] [RANDOM      ] Test #475  | opa = 0xa1 (unformatted write to stdout
+) | opb = 0x5 (  5) | DUT =    805 | Exp =    805
+[PASS] [RANDOM      ] Test #476  | opa = 0x2c (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =   -176 | Exp =   -176
+[PASS] [RANDOM      ] Test #477  | opa = 0x7f (unformatted write to stdout
+) | opb = 0x1 (  1) | DUT =    127 | Exp =    127
+[PASS] [RANDOM      ] Test #478  | opa = 0x35 (unformatted write to stdout
+) | opb = 0x4 (  4) | DUT =    212 | Exp =    212
+[PASS] [RANDOM      ] Test #479  | opa = 0x7e (unformatted write to stdout
+) | opb = 0xb ( -5) | DUT =   -630 | Exp =   -630
+[PASS] [RANDOM      ] Test #480  | opa = 0xcc (unformatted write to stdout
+) | opb = 0x1 (  1) | DUT =    204 | Exp =    204
+[PASS] [RANDOM      ] Test #481  | opa = 0x8f (unformatted write to stdout
+) | opb = 0x9 ( -7) | DUT =  -1001 | Exp =  -1001
+[PASS] [RANDOM      ] Test #482  | opa = 0x6f (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =   -444 | Exp =   -444
+[PASS] [RANDOM      ] Test #483  | opa = 0x34 (unformatted write to stdout
+) | opb = 0xd ( -3) | DUT =   -156 | Exp =   -156
+[PASS] [RANDOM      ] Test #484  | opa = 0xce (unformatted write to stdout
+) | opb = 0x4 (  4) | DUT =    824 | Exp =    824
+[PASS] [RANDOM      ] Test #485  | opa = 0x4 (unformatted write to stdout
+) | opb = 0x3 (  3) | DUT =     12 | Exp =     12
+[PASS] [RANDOM      ] Test #486  | opa = 0xcc (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =   -204 | Exp =   -204
+[PASS] [RANDOM      ] Test #487  | opa = 0x97 (unformatted write to stdout
+) | opb = 0x4 (  4) | DUT =    604 | Exp =    604
+[PASS] [RANDOM      ] Test #488  | opa = 0x3c (unformatted write to stdout
+) | opb = 0x4 (  4) | DUT =    240 | Exp =    240
+[PASS] [RANDOM      ] Test #489  | opa = 0x49 (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -146 | Exp =   -146
+[PASS] [RANDOM      ] Test #490  | opa = 0xca (unformatted write to stdout
+) | opb = 0x8 ( -8) | DUT =  -1616 | Exp =  -1616
+[PASS] [RANDOM      ] Test #491  | opa = 0x14 (unformatted write to stdout
+) | opb = 0x5 (  5) | DUT =    100 | Exp =    100
+[PASS] [RANDOM      ] Test #492  | opa = 0x17 (unformatted write to stdout
+) | opb = 0x9 ( -7) | DUT =   -161 | Exp =   -161
+[PASS] [RANDOM      ] Test #493  | opa = 0x7c (unformatted write to stdout
+) | opb = 0x9 ( -7) | DUT =   -868 | Exp =   -868
+[PASS] [RANDOM      ] Test #494  | opa = 0xf7 (unformatted write to stdout
+) | opb = 0x4 (  4) | DUT =    988 | Exp =    988
+[PASS] [RANDOM      ] Test #495  | opa = 0x4c (unformatted write to stdout
+) | opb = 0x1 (  1) | DUT =     76 | Exp =     76
+[PASS] [RANDOM      ] Test #496  | opa = 0x59 (unformatted write to stdout
+) | opb = 0x7 (  7) | DUT =    623 | Exp =    623
+[PASS] [RANDOM      ] Test #497  | opa = 0x9f (unformatted write to stdout
+) | opb = 0x8 ( -8) | DUT =  -1272 | Exp =  -1272
+[PASS] [RANDOM      ] Test #498  | opa = 0x49 (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =    -73 | Exp =    -73
+[PASS] [RANDOM      ] Test #499  | opa = 0x67 (unformatted write to stdout
+) | opb = 0x7 (  7) | DUT =    721 | Exp =    721
+[PASS] [RANDOM      ] Test #500  | opa = 0x1a (unformatted write to stdout
+) | opb = 0x8 ( -8) | DUT =   -208 | Exp =   -208
+[PASS] [RANDOM      ] Test #501  | opa = 0x84 (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =   -528 | Exp =   -528
+[PASS] [RANDOM      ] Test #502  | opa = 0x9b (unformatted write to stdout
+) | opb = 0x6 (  6) | DUT =    930 | Exp =    930
+[PASS] [RANDOM      ] Test #503  | opa = 0x10 (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =    -64 | Exp =    -64
+[PASS] [RANDOM      ] Test #504  | opa = 0xef (unformatted write to stdout
+) | opb = 0x5 (  5) | DUT =   1195 | Exp =   1195
+[PASS] [RANDOM      ] Test #505  | opa = 0x67 (unformatted write to stdout
+) | opb = 0x0 (  0) | DUT =      0 | Exp =      0
+[PASS] [RANDOM      ] Test #506  | opa = 0x66 (unformatted write to stdout
+) | opb = 0x9 ( -7) | DUT =   -714 | Exp =   -714
+[PASS] [RANDOM      ] Test #507  | opa = 0x29 (unformatted write to stdout
+) | opb = 0x4 (  4) | DUT =    164 | Exp =    164
+[PASS] [RANDOM      ] Test #508  | opa = 0x75 (unformatted write to stdout
+) | opb = 0x0 (  0) | DUT =      0 | Exp =      0
+[PASS] [RANDOM      ] Test #509  | opa = 0x2e (unformatted write to stdout
+) | opb = 0x7 (  7) | DUT =    322 | Exp =    322
+[PASS] [RANDOM      ] Test #510  | opa = 0xa4 (unformatted write to stdout
+) | opb = 0x3 (  3) | DUT =    492 | Exp =    492
+[PASS] [RANDOM      ] Test #511  | opa = 0x26 (unformatted write to stdout
+) | opb = 0xb ( -5) | DUT =   -190 | Exp =   -190
+[PASS] [RANDOM      ] Test #512  | opa = 0xe (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =    -84 | Exp =    -84
+[PASS] [RANDOM      ] Test #513  | opa = 0x67 (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =   -103 | Exp =   -103
+[PASS] [RANDOM      ] Test #514  | opa = 0xdf (unformatted write to stdout
+) | opb = 0x2 (  2) | DUT =    446 | Exp =    446
+[PASS] [RANDOM      ] Test #515  | opa = 0x20 (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =   -192 | Exp =   -192
+[PASS] [RANDOM      ] Test #516  | opa = 0xc9 (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -402 | Exp =   -402
+[PASS] [RANDOM      ] Test #517  | opa = 0xee (unformatted write to stdout
+) | opb = 0x1 (  1) | DUT =    238 | Exp =    238
+[PASS] [RANDOM      ] Test #518  | opa = 0x7a (unformatted write to stdout
+) | opb = 0x2 (  2) | DUT =    244 | Exp =    244
+[PASS] [RANDOM      ] Test #519  | opa = 0x93 (unformatted write to stdout
+) | opb = 0x5 (  5) | DUT =    735 | Exp =    735
+[PASS] [RANDOM      ] Test #520  | opa = 0x80 (unformatted write to stdout
+) | opb = 0x1 (  1) | DUT =    128 | Exp =    128
+[PASS] [RANDOM      ] Test #521  | opa = 0x43 (unformatted write to stdout
+) | opb = 0x2 (  2) | DUT =    134 | Exp =    134
+[PASS] [RANDOM      ] Test #522  | opa = 0x22 (unformatted write to stdout
+) | opb = 0x4 (  4) | DUT =    136 | Exp =    136
+[PASS] [RANDOM      ] Test #523  | opa = 0xcc (unformatted write to stdout
+) | opb = 0x1 (  1) | DUT =    204 | Exp =    204
+[PASS] [RANDOM      ] Test #524  | opa = 0x23 (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =    -35 | Exp =    -35
+[PASS] [RANDOM      ] Test #525  | opa = 0x90 (unformatted write to stdout
+) | opb = 0x4 (  4) | DUT =    576 | Exp =    576
+[PASS] [RANDOM      ] Test #526  | opa = 0x70 (unformatted write to stdout
+) | opb = 0x4 (  4) | DUT =    448 | Exp =    448
+[PASS] [RANDOM      ] Test #527  | opa = 0xc (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =    -48 | Exp =    -48
+[PASS] [RANDOM      ] Test #528  | opa = 0x34 (unformatted write to stdout
+) | opb = 0x2 (  2) | DUT =    104 | Exp =    104
+[PASS] [RANDOM      ] Test #529  | opa = 0x67 (unformatted write to stdout
+) | opb = 0x8 ( -8) | DUT =   -824 | Exp =   -824
+[PASS] [RANDOM      ] Test #530  | opa = 0xc2 (unformatted write to stdout
+) | opb = 0xb ( -5) | DUT =   -970 | Exp =   -970
+[PASS] [RANDOM      ] Test #531  | opa = 0x53 (unformatted write to stdout
+) | opb = 0xb ( -5) | DUT =   -415 | Exp =   -415
+[PASS] [RANDOM      ] Test #532  | opa = 0x70 (unformatted write to stdout
+) | opb = 0xb ( -5) | DUT =   -560 | Exp =   -560
+[PASS] [RANDOM      ] Test #533  | opa = 0x23 (unformatted write to stdout
+) | opb = 0x0 (  0) | DUT =      0 | Exp =      0
+[PASS] [RANDOM      ] Test #534  | opa = 0x35 (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -106 | Exp =   -106
+[PASS] [RANDOM      ] Test #535  | opa = 0xe6 (unformatted write to stdout
+) | opb = 0x4 (  4) | DUT =    920 | Exp =    920
+[PASS] [RANDOM      ] Test #536  | opa = 0xae (unformatted write to stdout
+) | opb = 0x4 (  4) | DUT =    696 | Exp =    696
+[PASS] [RANDOM      ] Test #537  | opa = 0x1 (unformatted write to stdout
+) | opb = 0x1 (  1) | DUT =      1 | Exp =      1
+[PASS] [RANDOM      ] Test #538  | opa = 0xe3 (unformatted write to stdout
+) | opb = 0x1 (  1) | DUT =    227 | Exp =    227
+[PASS] [RANDOM      ] Test #539  | opa = 0x77 (unformatted write to stdout
+) | opb = 0x1 (  1) | DUT =    119 | Exp =    119
+[PASS] [RANDOM      ] Test #540  | opa = 0xea (unformatted write to stdout
+) | opb = 0x8 ( -8) | DUT =  -1872 | Exp =  -1872
+[PASS] [RANDOM      ] Test #541  | opa = 0xea (unformatted write to stdout
+) | opb = 0x8 ( -8) | DUT =  -1872 | Exp =  -1872
+[PASS] [RANDOM      ] Test #542  | opa = 0x40 (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -128 | Exp =   -128
+[PASS] [RANDOM      ] Test #543  | opa = 0x9 (unformatted write to stdout
+) | opb = 0x6 (  6) | DUT =     54 | Exp =     54
+[PASS] [RANDOM      ] Test #544  | opa = 0x7d (unformatted write to stdout
+) | opb = 0x9 ( -7) | DUT =   -875 | Exp =   -875
+[PASS] [RANDOM      ] Test #545  | opa = 0xe8 (unformatted write to stdout
+) | opb = 0x9 ( -7) | DUT =  -1624 | Exp =  -1624
+[PASS] [RANDOM      ] Test #546  | opa = 0xaf (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -350 | Exp =   -350
+[PASS] [RANDOM      ] Test #547  | opa = 0x7f (unformatted write to stdout
+) | opb = 0x5 (  5) | DUT =    635 | Exp =    635
+[PASS] [RANDOM      ] Test #548  | opa = 0x8c (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =   -840 | Exp =   -840
+[PASS] [RANDOM      ] Test #549  | opa = 0x4e (unformatted write to stdout
+) | opb = 0x4 (  4) | DUT =    312 | Exp =    312
+[PASS] [RANDOM      ] Test #550  | opa = 0x45 (unformatted write to stdout
+) | opb = 0x7 (  7) | DUT =    483 | Exp =    483
+[PASS] [RANDOM      ] Test #551  | opa = 0xdc (unformatted write to stdout
+) | opb = 0xb ( -5) | DUT =  -1100 | Exp =  -1100
+[PASS] [RANDOM      ] Test #552  | opa = 0xa3 (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -326 | Exp =   -326
+[PASS] [RANDOM      ] Test #553  | opa = 0x91 (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -290 | Exp =   -290
+[PASS] [RANDOM      ] Test #554  | opa = 0xbf (unformatted write to stdout
+) | opb = 0x7 (  7) | DUT =   1337 | Exp =   1337
+[PASS] [RANDOM      ] Test #555  | opa = 0x2f (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =   -188 | Exp =   -188
+[PASS] [RANDOM      ] Test #556  | opa = 0x7e (unformatted write to stdout
+) | opb = 0xb ( -5) | DUT =   -630 | Exp =   -630
+[PASS] [RANDOM      ] Test #557  | opa = 0xcd (unformatted write to stdout
+) | opb = 0xb ( -5) | DUT =  -1025 | Exp =  -1025
+[PASS] [RANDOM      ] Test #558  | opa = 0xa2 (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -324 | Exp =   -324
+[PASS] [RANDOM      ] Test #559  | opa = 0x36 (unformatted write to stdout
+) | opb = 0x2 (  2) | DUT =    108 | Exp =    108
+[PASS] [RANDOM      ] Test #560  | opa = 0xa (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =    -60 | Exp =    -60
+[PASS] [RANDOM      ] Test #561  | opa = 0xff (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =  -1530 | Exp =  -1530
+[PASS] [RANDOM      ] Test #562  | opa = 0x90 (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =   -576 | Exp =   -576
+[PASS] [RANDOM      ] Test #563  | opa = 0xaf (unformatted write to stdout
+) | opb = 0x4 (  4) | DUT =    700 | Exp =    700
+[PASS] [RANDOM      ] Test #564  | opa = 0x89 (unformatted write to stdout
+) | opb = 0x1 (  1) | DUT =    137 | Exp =    137
+[PASS] [RANDOM      ] Test #565  | opa = 0xe9 (unformatted write to stdout
+) | opb = 0x8 ( -8) | DUT =  -1864 | Exp =  -1864
+[PASS] [RANDOM      ] Test #566  | opa = 0xce (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -412 | Exp =   -412
+[PASS] [RANDOM      ] Test #567  | opa = 0x52 (unformatted write to stdout
+) | opb = 0x7 (  7) | DUT =    574 | Exp =    574
+[PASS] [RANDOM      ] Test #568  | opa = 0xf3 (unformatted write to stdout
+) | opb = 0xd ( -3) | DUT =   -729 | Exp =   -729
+[PASS] [RANDOM      ] Test #569  | opa = 0xaf (unformatted write to stdout
+) | opb = 0x4 (  4) | DUT =    700 | Exp =    700
+[PASS] [RANDOM      ] Test #570  | opa = 0xf3 (unformatted write to stdout
+) | opb = 0x8 ( -8) | DUT =  -1944 | Exp =  -1944
+[PASS] [RANDOM      ] Test #571  | opa = 0x84 (unformatted write to stdout
+) | opb = 0xb ( -5) | DUT =   -660 | Exp =   -660
+[PASS] [RANDOM      ] Test #572  | opa = 0x82 (unformatted write to stdout
+) | opb = 0xb ( -5) | DUT =   -650 | Exp =   -650
+[PASS] [RANDOM      ] Test #573  | opa = 0x19 (unformatted write to stdout
+) | opb = 0x3 (  3) | DUT =     75 | Exp =     75
+[PASS] [RANDOM      ] Test #574  | opa = 0xcf (unformatted write to stdout
+) | opb = 0x4 (  4) | DUT =    828 | Exp =    828
+[PASS] [RANDOM      ] Test #575  | opa = 0xb8 (unformatted write to stdout
+) | opb = 0x7 (  7) | DUT =   1288 | Exp =   1288
+[PASS] [RANDOM      ] Test #576  | opa = 0x67 (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =   -103 | Exp =   -103
+[PASS] [RANDOM      ] Test #577  | opa = 0x8e (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =   -568 | Exp =   -568
+[PASS] [RANDOM      ] Test #578  | opa = 0x7b (unformatted write to stdout
+) | opb = 0x1 (  1) | DUT =    123 | Exp =    123
+[PASS] [RANDOM      ] Test #579  | opa = 0x7a (unformatted write to stdout
+) | opb = 0x7 (  7) | DUT =    854 | Exp =    854
+[PASS] [RANDOM      ] Test #580  | opa = 0xbd (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =   -189 | Exp =   -189
+[PASS] [RANDOM      ] Test #581  | opa = 0xb9 (unformatted write to stdout
+) | opb = 0x5 (  5) | DUT =    925 | Exp =    925
+[PASS] [RANDOM      ] Test #582  | opa = 0xa1 (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =   -644 | Exp =   -644
+[PASS] [RANDOM      ] Test #583  | opa = 0x33 (unformatted write to stdout
+) | opb = 0xd ( -3) | DUT =   -153 | Exp =   -153
+[PASS] [RANDOM      ] Test #584  | opa = 0xa2 (unformatted write to stdout
+) | opb = 0x0 (  0) | DUT =      0 | Exp =      0
+[PASS] [RANDOM      ] Test #585  | opa = 0xe3 (unformatted write to stdout
+) | opb = 0x1 (  1) | DUT =    227 | Exp =    227
+[PASS] [RANDOM      ] Test #586  | opa = 0xed (unformatted write to stdout
+) | opb = 0x4 (  4) | DUT =    948 | Exp =    948
+[PASS] [RANDOM      ] Test #587  | opa = 0x95 (unformatted write to stdout
+) | opb = 0xb ( -5) | DUT =   -745 | Exp =   -745
+[PASS] [RANDOM      ] Test #588  | opa = 0x80 (unformatted write to stdout
+) | opb = 0x9 ( -7) | DUT =   -896 | Exp =   -896
+[PASS] [RANDOM      ] Test #589  | opa = 0xf9 (unformatted write to stdout
+) | opb = 0x4 (  4) | DUT =    996 | Exp =    996
+[PASS] [RANDOM      ] Test #590  | opa = 0xaf (unformatted write to stdout
+) | opb = 0x5 (  5) | DUT =    875 | Exp =    875
+[PASS] [RANDOM      ] Test #591  | opa = 0xbe (unformatted write to stdout
+) | opb = 0x5 (  5) | DUT =    950 | Exp =    950
+[PASS] [RANDOM      ] Test #592  | opa = 0x8b (unformatted write to stdout
+) | opb = 0x5 (  5) | DUT =    695 | Exp =    695
+[PASS] [RANDOM      ] Test #593  | opa = 0x43 (unformatted write to stdout
+) | opb = 0x7 (  7) | DUT =    469 | Exp =    469
+[PASS] [RANDOM      ] Test #594  | opa = 0xb1 (unformatted write to stdout
+) | opb = 0x7 (  7) | DUT =   1239 | Exp =   1239
+[PASS] [RANDOM      ] Test #595  | opa = 0x3 (unformatted write to stdout
+) | opb = 0x0 (  0) | DUT =      0 | Exp =      0
+[PASS] [RANDOM      ] Test #596  | opa = 0x6d (unformatted write to stdout
+) | opb = 0xb ( -5) | DUT =   -545 | Exp =   -545
+[PASS] [RANDOM      ] Test #597  | opa = 0xce (unformatted write to stdout
+) | opb = 0x4 (  4) | DUT =    824 | Exp =    824
+[PASS] [RANDOM      ] Test #598  | opa = 0x3a (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =   -232 | Exp =   -232
+[PASS] [RANDOM      ] Test #599  | opa = 0x75 (unformatted write to stdout
+) | opb = 0x1 (  1) | DUT =    117 | Exp =    117
+[PASS] [RANDOM      ] Test #600  | opa = 0x1e (unformatted write to stdout
+) | opb = 0x8 ( -8) | DUT =   -240 | Exp =   -240
+[PASS] [RANDOM      ] Test #601  | opa = 0x80 (unformatted write to stdout
+) | opb = 0xd ( -3) | DUT =   -384 | Exp =   -384
+[PASS] [RANDOM      ] Test #602  | opa = 0x42 (unformatted write to stdout
+) | opb = 0x6 (  6) | DUT =    396 | Exp =    396
+[PASS] [RANDOM      ] Test #603  | opa = 0xb (unformatted write to stdout
+) | opb = 0xb ( -5) | DUT =    -55 | Exp =    -55
+[PASS] [RANDOM      ] Test #604  | opa = 0xf4 (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =   -976 | Exp =   -976
+[PASS] [RANDOM      ] Test #605  | opa = 0xe2 (unformatted write to stdout
+) | opb = 0x2 (  2) | DUT =    452 | Exp =    452
+[PASS] [RANDOM      ] Test #606  | opa = 0xd3 (unformatted write to stdout
+) | opb = 0xd ( -3) | DUT =   -633 | Exp =   -633
+[PASS] [RANDOM      ] Test #607  | opa = 0x85 (unformatted write to stdout
+) | opb = 0x6 (  6) | DUT =    798 | Exp =    798
+[PASS] [RANDOM      ] Test #608  | opa = 0xdc (unformatted write to stdout
+) | opb = 0x8 ( -8) | DUT =  -1760 | Exp =  -1760
+[PASS] [RANDOM      ] Test #609  | opa = 0x97 (unformatted write to stdout
+) | opb = 0x8 ( -8) | DUT =  -1208 | Exp =  -1208
+[PASS] [RANDOM      ] Test #610  | opa = 0x9f (unformatted write to stdout
+) | opb = 0x4 (  4) | DUT =    636 | Exp =    636
+[PASS] [RANDOM      ] Test #611  | opa = 0xfa (unformatted write to stdout
+) | opb = 0x4 (  4) | DUT =   1000 | Exp =   1000
+[PASS] [RANDOM      ] Test #612  | opa = 0xc6 (unformatted write to stdout
+) | opb = 0x5 (  5) | DUT =    990 | Exp =    990
+[PASS] [RANDOM      ] Test #613  | opa = 0x84 (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =   -792 | Exp =   -792
+[PASS] [RANDOM      ] Test #614  | opa = 0xc2 (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =   -194 | Exp =   -194
+[PASS] [RANDOM      ] Test #615  | opa = 0x1a (unformatted write to stdout
+) | opb = 0xd ( -3) | DUT =    -78 | Exp =    -78
+[PASS] [RANDOM      ] Test #616  | opa = 0x3f (unformatted write to stdout
+) | opb = 0x6 (  6) | DUT =    378 | Exp =    378
+[PASS] [RANDOM      ] Test #617  | opa = 0xa5 (unformatted write to stdout
+) | opb = 0x6 (  6) | DUT =    990 | Exp =    990
+[PASS] [RANDOM      ] Test #618  | opa = 0xb7 (unformatted write to stdout
+) | opb = 0x8 ( -8) | DUT =  -1464 | Exp =  -1464
+[PASS] [RANDOM      ] Test #619  | opa = 0x1a (unformatted write to stdout
+) | opb = 0xd ( -3) | DUT =    -78 | Exp =    -78
+[PASS] [RANDOM      ] Test #620  | opa = 0x41 (unformatted write to stdout
+) | opb = 0x3 (  3) | DUT =    195 | Exp =    195
+[PASS] [RANDOM      ] Test #621  | opa = 0x98 (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -304 | Exp =   -304
+[PASS] [RANDOM      ] Test #622  | opa = 0x7b (unformatted write to stdout
+) | opb = 0x9 ( -7) | DUT =   -861 | Exp =   -861
+[PASS] [RANDOM      ] Test #623  | opa = 0x54 (unformatted write to stdout
+) | opb = 0x0 (  0) | DUT =      0 | Exp =      0
+[PASS] [RANDOM      ] Test #624  | opa = 0x28 (unformatted write to stdout
+) | opb = 0x5 (  5) | DUT =    200 | Exp =    200
+[PASS] [RANDOM      ] Test #625  | opa = 0xd1 (unformatted write to stdout
+) | opb = 0x5 (  5) | DUT =   1045 | Exp =   1045
+[PASS] [RANDOM      ] Test #626  | opa = 0xdf (unformatted write to stdout
+) | opb = 0xd ( -3) | DUT =   -669 | Exp =   -669
+[PASS] [RANDOM      ] Test #627  | opa = 0x9a (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =   -924 | Exp =   -924
+[PASS] [RANDOM      ] Test #628  | opa = 0xe3 (unformatted write to stdout
+) | opb = 0x5 (  5) | DUT =   1135 | Exp =   1135
+[PASS] [RANDOM      ] Test #629  | opa = 0x85 (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -266 | Exp =   -266
+[PASS] [RANDOM      ] Test #630  | opa = 0xd (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =    -78 | Exp =    -78
+[PASS] [RANDOM      ] Test #631  | opa = 0x31 (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =   -294 | Exp =   -294
+[PASS] [RANDOM      ] Test #632  | opa = 0x4d (unformatted write to stdout
+) | opb = 0xb ( -5) | DUT =   -385 | Exp =   -385
+[PASS] [RANDOM      ] Test #633  | opa = 0x40 (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =    -64 | Exp =    -64
+[PASS] [RANDOM      ] Test #634  | opa = 0x3b (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =    -59 | Exp =    -59
+[PASS] [RANDOM      ] Test #635  | opa = 0x84 (unformatted write to stdout
+) | opb = 0x6 (  6) | DUT =    792 | Exp =    792
+[PASS] [RANDOM      ] Test #636  | opa = 0xb9 (unformatted write to stdout
+) | opb = 0x8 ( -8) | DUT =  -1480 | Exp =  -1480
+[PASS] [RANDOM      ] Test #637  | opa = 0x29 (unformatted write to stdout
+) | opb = 0xb ( -5) | DUT =   -205 | Exp =   -205
+[PASS] [RANDOM      ] Test #638  | opa = 0x91 (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -290 | Exp =   -290
+[PASS] [RANDOM      ] Test #639  | opa = 0x81 (unformatted write to stdout
+) | opb = 0x4 (  4) | DUT =    516 | Exp =    516
+[PASS] [RANDOM      ] Test #640  | opa = 0xac (unformatted write to stdout
+) | opb = 0xb ( -5) | DUT =   -860 | Exp =   -860
+[PASS] [RANDOM      ] Test #641  | opa = 0x2 (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =    -12 | Exp =    -12
+[PASS] [RANDOM      ] Test #642  | opa = 0x36 (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =    -54 | Exp =    -54
+[PASS] [RANDOM      ] Test #643  | opa = 0xaa (unformatted write to stdout
+) | opb = 0xd ( -3) | DUT =   -510 | Exp =   -510
+[PASS] [RANDOM      ] Test #644  | opa = 0xcd (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =   -820 | Exp =   -820
+[PASS] [RANDOM      ] Test #645  | opa = 0xc6 (unformatted write to stdout
+) | opb = 0x4 (  4) | DUT =    792 | Exp =    792
+[PASS] [RANDOM      ] Test #646  | opa = 0x9b (unformatted write to stdout
+) | opb = 0x8 ( -8) | DUT =  -1240 | Exp =  -1240
+[PASS] [RANDOM      ] Test #647  | opa = 0xd4 (unformatted write to stdout
+) | opb = 0x9 ( -7) | DUT =  -1484 | Exp =  -1484
+[PASS] [RANDOM      ] Test #648  | opa = 0xf9 (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =  -1494 | Exp =  -1494
+[PASS] [RANDOM      ] Test #649  | opa = 0x6 (unformatted write to stdout
+) | opb = 0x4 (  4) | DUT =     24 | Exp =     24
+[PASS] [RANDOM      ] Test #650  | opa = 0xea (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -468 | Exp =   -468
+[PASS] [RANDOM      ] Test #651  | opa = 0x97 (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -302 | Exp =   -302
+[PASS] [RANDOM      ] Test #652  | opa = 0x98 (unformatted write to stdout
+) | opb = 0xd ( -3) | DUT =   -456 | Exp =   -456
+[PASS] [RANDOM      ] Test #653  | opa = 0xf1 (unformatted write to stdout
+) | opb = 0x7 (  7) | DUT =   1687 | Exp =   1687
+[PASS] [RANDOM      ] Test #654  | opa = 0xab (unformatted write to stdout
+) | opb = 0x5 (  5) | DUT =    855 | Exp =    855
+[PASS] [RANDOM      ] Test #655  | opa = 0x6b (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -214 | Exp =   -214
+[PASS] [RANDOM      ] Test #656  | opa = 0x10 (unformatted write to stdout
+) | opb = 0x8 ( -8) | DUT =   -128 | Exp =   -128
+[PASS] [RANDOM      ] Test #657  | opa = 0x7 (unformatted write to stdout
+) | opb = 0x8 ( -8) | DUT =    -56 | Exp =    -56
+[PASS] [RANDOM      ] Test #658  | opa = 0x96 (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =   -900 | Exp =   -900
+[PASS] [RANDOM      ] Test #659  | opa = 0x7d (unformatted write to stdout
+) | opb = 0x9 ( -7) | DUT =   -875 | Exp =   -875
+[PASS] [RANDOM      ] Test #660  | opa = 0x74 (unformatted write to stdout
+) | opb = 0x5 (  5) | DUT =    580 | Exp =    580
+[PASS] [RANDOM      ] Test #661  | opa = 0x86 (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =   -134 | Exp =   -134
+[PASS] [RANDOM      ] Test #662  | opa = 0x99 (unformatted write to stdout
+) | opb = 0x7 (  7) | DUT =   1071 | Exp =   1071
+[PASS] [RANDOM      ] Test #663  | opa = 0x29 (unformatted write to stdout
+) | opb = 0x8 ( -8) | DUT =   -328 | Exp =   -328
+[PASS] [RANDOM      ] Test #664  | opa = 0x62 (unformatted write to stdout
+) | opb = 0x6 (  6) | DUT =    588 | Exp =    588
+[PASS] [RANDOM      ] Test #665  | opa = 0x7d (unformatted write to stdout
+) | opb = 0x5 (  5) | DUT =    625 | Exp =    625
+[PASS] [RANDOM      ] Test #666  | opa = 0xb (unformatted write to stdout
+) | opb = 0x3 (  3) | DUT =     33 | Exp =     33
+[PASS] [RANDOM      ] Test #667  | opa = 0x2a (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =    -42 | Exp =    -42
+[PASS] [RANDOM      ] Test #668  | opa = 0x8 (unformatted write to stdout
+) | opb = 0xb ( -5) | DUT =    -40 | Exp =    -40
+[PASS] [RANDOM      ] Test #669  | opa = 0x96 (unformatted write to stdout
+) | opb = 0x2 (  2) | DUT =    300 | Exp =    300
+[PASS] [RANDOM      ] Test #670  | opa = 0xc (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =    -72 | Exp =    -72
+[PASS] [RANDOM      ] Test #671  | opa = 0x7f (unformatted write to stdout
+) | opb = 0x3 (  3) | DUT =    381 | Exp =    381
+[PASS] [RANDOM      ] Test #672  | opa = 0x67 (unformatted write to stdout
+) | opb = 0xd ( -3) | DUT =   -309 | Exp =   -309
+[PASS] [RANDOM      ] Test #673  | opa = 0x8b (unformatted write to stdout
+) | opb = 0x8 ( -8) | DUT =  -1112 | Exp =  -1112
+[PASS] [RANDOM      ] Test #674  | opa = 0x1c (unformatted write to stdout
+) | opb = 0x5 (  5) | DUT =    140 | Exp =    140
+[PASS] [RANDOM      ] Test #675  | opa = 0xf3 (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -486 | Exp =   -486
+[PASS] [RANDOM      ] Test #676  | opa = 0xb9 (unformatted write to stdout
+) | opb = 0x2 (  2) | DUT =    370 | Exp =    370
+[PASS] [RANDOM      ] Test #677  | opa = 0x53 (unformatted write to stdout
+) | opb = 0x0 (  0) | DUT =      0 | Exp =      0
+[PASS] [RANDOM      ] Test #678  | opa = 0xe0 (unformatted write to stdout
+) | opb = 0xb ( -5) | DUT =  -1120 | Exp =  -1120
+[PASS] [RANDOM      ] Test #679  | opa = 0x62 (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =   -392 | Exp =   -392
+[PASS] [RANDOM      ] Test #680  | opa = 0x10 (unformatted write to stdout
+) | opb = 0x3 (  3) | DUT =     48 | Exp =     48
+[PASS] [RANDOM      ] Test #681  | opa = 0xf4 (unformatted write to stdout
+) | opb = 0xd ( -3) | DUT =   -732 | Exp =   -732
+[PASS] [RANDOM      ] Test #682  | opa = 0x11 (unformatted write to stdout
+) | opb = 0xb ( -5) | DUT =    -85 | Exp =    -85
+[PASS] [RANDOM      ] Test #683  | opa = 0xa5 (unformatted write to stdout
+) | opb = 0x6 (  6) | DUT =    990 | Exp =    990
+[PASS] [RANDOM      ] Test #684  | opa = 0x1d (unformatted write to stdout
+) | opb = 0x7 (  7) | DUT =    203 | Exp =    203
+[PASS] [RANDOM      ] Test #685  | opa = 0xa (unformatted write to stdout
+) | opb = 0x7 (  7) | DUT =     70 | Exp =     70
+[PASS] [RANDOM      ] Test #686  | opa = 0xa2 (unformatted write to stdout
+) | opb = 0x0 (  0) | DUT =      0 | Exp =      0
+[PASS] [RANDOM      ] Test #687  | opa = 0x34 (unformatted write to stdout
+) | opb = 0x4 (  4) | DUT =    208 | Exp =    208
+[PASS] [RANDOM      ] Test #688  | opa = 0x32 (unformatted write to stdout
+) | opb = 0x9 ( -7) | DUT =   -350 | Exp =   -350
+[PASS] [RANDOM      ] Test #689  | opa = 0x3 (unformatted write to stdout
+) | opb = 0xb ( -5) | DUT =    -15 | Exp =    -15
+[PASS] [RANDOM      ] Test #690  | opa = 0x12 (unformatted write to stdout
+) | opb = 0x8 ( -8) | DUT =   -144 | Exp =   -144
+[PASS] [RANDOM      ] Test #691  | opa = 0x76 (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =   -118 | Exp =   -118
+[PASS] [RANDOM      ] Test #692  | opa = 0x67 (unformatted write to stdout
+) | opb = 0x0 (  0) | DUT =      0 | Exp =      0
+[PASS] [RANDOM      ] Test #693  | opa = 0x6 (unformatted write to stdout
+) | opb = 0x9 ( -7) | DUT =    -42 | Exp =    -42
+[PASS] [RANDOM      ] Test #694  | opa = 0xf4 (unformatted write to stdout
+) | opb = 0xd ( -3) | DUT =   -732 | Exp =   -732
+[PASS] [RANDOM      ] Test #695  | opa = 0xbd (unformatted write to stdout
+) | opb = 0x9 ( -7) | DUT =  -1323 | Exp =  -1323
+[PASS] [RANDOM      ] Test #696  | opa = 0xfa (unformatted write to stdout
+) | opb = 0x7 (  7) | DUT =   1750 | Exp =   1750
+[PASS] [RANDOM      ] Test #697  | opa = 0x86 (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =   -804 | Exp =   -804
+[PASS] [RANDOM      ] Test #698  | opa = 0x9c (unformatted write to stdout
+) | opb = 0xd ( -3) | DUT =   -468 | Exp =   -468
+[PASS] [RANDOM      ] Test #699  | opa = 0xf7 (unformatted write to stdout
+) | opb = 0x3 (  3) | DUT =    741 | Exp =    741
+[PASS] [RANDOM      ] Test #700  | opa = 0xd9 (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =   -868 | Exp =   -868
+[PASS] [RANDOM      ] Test #701  | opa = 0x8c (unformatted write to stdout
+) | opb = 0x4 (  4) | DUT =    560 | Exp =    560
+[PASS] [RANDOM      ] Test #702  | opa = 0x7 (unformatted write to stdout
+) | opb = 0xd ( -3) | DUT =    -21 | Exp =    -21
+[PASS] [RANDOM      ] Test #703  | opa = 0x10 (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =    -64 | Exp =    -64
+[PASS] [RANDOM      ] Test #704  | opa = 0x5d (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -186 | Exp =   -186
+[PASS] [RANDOM      ] Test #705  | opa = 0xb1 (unformatted write to stdout
+) | opb = 0x7 (  7) | DUT =   1239 | Exp =   1239
+[PASS] [RANDOM      ] Test #706  | opa = 0xed (unformatted write to stdout
+) | opb = 0x5 (  5) | DUT =   1185 | Exp =   1185
+[PASS] [RANDOM      ] Test #707  | opa = 0xff (unformatted write to stdout
+) | opb = 0x1 (  1) | DUT =    255 | Exp =    255
+[PASS] [RANDOM      ] Test #708  | opa = 0x34 (unformatted write to stdout
+) | opb = 0x1 (  1) | DUT =     52 | Exp =     52
+[PASS] [RANDOM      ] Test #709  | opa = 0xc3 (unformatted write to stdout
+) | opb = 0x9 ( -7) | DUT =  -1365 | Exp =  -1365
+[PASS] [RANDOM      ] Test #710  | opa = 0x5 (unformatted write to stdout
+) | opb = 0x9 ( -7) | DUT =    -35 | Exp =    -35
+[PASS] [RANDOM      ] Test #711  | opa = 0x84 (unformatted write to stdout
+) | opb = 0xb ( -5) | DUT =   -660 | Exp =   -660
+[PASS] [RANDOM      ] Test #712  | opa = 0x83 (unformatted write to stdout
+) | opb = 0x6 (  6) | DUT =    786 | Exp =    786
+[PASS] [RANDOM      ] Test #713  | opa = 0x1b (unformatted write to stdout
+) | opb = 0x1 (  1) | DUT =     27 | Exp =     27
+[PASS] [RANDOM      ] Test #714  | opa = 0x78 (unformatted write to stdout
+) | opb = 0x0 (  0) | DUT =      0 | Exp =      0
+[PASS] [RANDOM      ] Test #715  | opa = 0x9e (unformatted write to stdout
+) | opb = 0x8 ( -8) | DUT =  -1264 | Exp =  -1264
+[PASS] [RANDOM      ] Test #716  | opa = 0x29 (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =    -82 | Exp =    -82
+[PASS] [RANDOM      ] Test #717  | opa = 0xa7 (unformatted write to stdout
+) | opb = 0x2 (  2) | DUT =    334 | Exp =    334
+[PASS] [RANDOM      ] Test #718  | opa = 0x83 (unformatted write to stdout
+) | opb = 0xd ( -3) | DUT =   -393 | Exp =   -393
+[PASS] [RANDOM      ] Test #719  | opa = 0xa2 (unformatted write to stdout
+) | opb = 0x3 (  3) | DUT =    486 | Exp =    486
+[PASS] [RANDOM      ] Test #720  | opa = 0x3f (unformatted write to stdout
+) | opb = 0xd ( -3) | DUT =   -189 | Exp =   -189
+[PASS] [RANDOM      ] Test #721  | opa = 0xa3 (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =   -978 | Exp =   -978
+[PASS] [RANDOM      ] Test #722  | opa = 0x4f (unformatted write to stdout
+) | opb = 0xb ( -5) | DUT =   -395 | Exp =   -395
+[PASS] [RANDOM      ] Test #723  | opa = 0xf (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =    -60 | Exp =    -60
+[PASS] [RANDOM      ] Test #724  | opa = 0xc4 (unformatted write to stdout
+) | opb = 0x4 (  4) | DUT =    784 | Exp =    784
+[PASS] [RANDOM      ] Test #725  | opa = 0xfb (unformatted write to stdout
+) | opb = 0xd ( -3) | DUT =   -753 | Exp =   -753
+[PASS] [RANDOM      ] Test #726  | opa = 0xf0 (unformatted write to stdout
+) | opb = 0x2 (  2) | DUT =    480 | Exp =    480
+[PASS] [RANDOM      ] Test #727  | opa = 0xf (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =    -90 | Exp =    -90
+[PASS] [RANDOM      ] Test #728  | opa = 0x78 (unformatted write to stdout
+) | opb = 0x7 (  7) | DUT =    840 | Exp =    840
+[PASS] [RANDOM      ] Test #729  | opa = 0x67 (unformatted write to stdout
+) | opb = 0x1 (  1) | DUT =    103 | Exp =    103
+[PASS] [RANDOM      ] Test #730  | opa = 0x9b (unformatted write to stdout
+) | opb = 0x6 (  6) | DUT =    930 | Exp =    930
+[PASS] [RANDOM      ] Test #731  | opa = 0xa4 (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =   -656 | Exp =   -656
+[PASS] [RANDOM      ] Test #732  | opa = 0xe4 (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =   -912 | Exp =   -912
+[PASS] [RANDOM      ] Test #733  | opa = 0x33 (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =   -204 | Exp =   -204
+[PASS] [RANDOM      ] Test #734  | opa = 0x8 (unformatted write to stdout
+) | opb = 0x1 (  1) | DUT =      8 | Exp =      8
+[PASS] [RANDOM      ] Test #735  | opa = 0x86 (unformatted write to stdout
+) | opb = 0x8 ( -8) | DUT =  -1072 | Exp =  -1072
+[PASS] [RANDOM      ] Test #736  | opa = 0x9c (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =   -936 | Exp =   -936
+[PASS] [RANDOM      ] Test #737  | opa = 0xb2 (unformatted write to stdout
+) | opb = 0x8 ( -8) | DUT =  -1424 | Exp =  -1424
+[PASS] [RANDOM      ] Test #738  | opa = 0x5 (unformatted write to stdout
+) | opb = 0x8 ( -8) | DUT =    -40 | Exp =    -40
+[PASS] [RANDOM      ] Test #739  | opa = 0xb7 (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =  -1098 | Exp =  -1098
+[PASS] [RANDOM      ] Test #740  | opa = 0xa5 (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =   -165 | Exp =   -165
+[PASS] [RANDOM      ] Test #741  | opa = 0x6a (unformatted write to stdout
+) | opb = 0x3 (  3) | DUT =    318 | Exp =    318
+[PASS] [RANDOM      ] Test #742  | opa = 0x3e (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -124 | Exp =   -124
+[PASS] [RANDOM      ] Test #743  | opa = 0xbf (unformatted write to stdout
+) | opb = 0x9 ( -7) | DUT =  -1337 | Exp =  -1337
+[PASS] [RANDOM      ] Test #744  | opa = 0x12 (unformatted write to stdout
+) | opb = 0x1 (  1) | DUT =     18 | Exp =     18
+[PASS] [RANDOM      ] Test #745  | opa = 0xea (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =   -936 | Exp =   -936
+[PASS] [RANDOM      ] Test #746  | opa = 0x2a (unformatted write to stdout
+) | opb = 0xd ( -3) | DUT =   -126 | Exp =   -126
+[PASS] [RANDOM      ] Test #747  | opa = 0x9c (unformatted write to stdout
+) | opb = 0x5 (  5) | DUT =    780 | Exp =    780
+[PASS] [RANDOM      ] Test #748  | opa = 0xd1 (unformatted write to stdout
+) | opb = 0xb ( -5) | DUT =  -1045 | Exp =  -1045
+[PASS] [RANDOM      ] Test #749  | opa = 0x50 (unformatted write to stdout
+) | opb = 0x9 ( -7) | DUT =   -560 | Exp =   -560
+[PASS] [RANDOM      ] Test #750  | opa = 0x33 (unformatted write to stdout
+) | opb = 0xd ( -3) | DUT =   -153 | Exp =   -153
+[PASS] [RANDOM      ] Test #751  | opa = 0x64 (unformatted write to stdout
+) | opb = 0x8 ( -8) | DUT =   -800 | Exp =   -800
+[PASS] [RANDOM      ] Test #752  | opa = 0xa6 (unformatted write to stdout
+) | opb = 0x7 (  7) | DUT =   1162 | Exp =   1162
+[PASS] [RANDOM      ] Test #753  | opa = 0x84 (unformatted write to stdout
+) | opb = 0xb ( -5) | DUT =   -660 | Exp =   -660
+[PASS] [RANDOM      ] Test #754  | opa = 0x9 (unformatted write to stdout
+) | opb = 0x5 (  5) | DUT =     45 | Exp =     45
+[PASS] [RANDOM      ] Test #755  | opa = 0x91 (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =   -870 | Exp =   -870
+[PASS] [RANDOM      ] Test #756  | opa = 0x53 (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =    -83 | Exp =    -83
+[PASS] [RANDOM      ] Test #757  | opa = 0x1a (unformatted write to stdout
+) | opb = 0x6 (  6) | DUT =    156 | Exp =    156
+[PASS] [RANDOM      ] Test #758  | opa = 0x22 (unformatted write to stdout
+) | opb = 0x9 ( -7) | DUT =   -238 | Exp =   -238
+[PASS] [RANDOM      ] Test #759  | opa = 0x2 (unformatted write to stdout
+) | opb = 0x4 (  4) | DUT =      8 | Exp =      8
+[PASS] [RANDOM      ] Test #760  | opa = 0xf9 (unformatted write to stdout
+) | opb = 0xb ( -5) | DUT =  -1245 | Exp =  -1245
+[PASS] [RANDOM      ] Test #761  | opa = 0xef (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =   -956 | Exp =   -956
+[PASS] [RANDOM      ] Test #762  | opa = 0x74 (unformatted write to stdout
+) | opb = 0x1 (  1) | DUT =    116 | Exp =    116
+[PASS] [RANDOM      ] Test #763  | opa = 0xaa (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =   -170 | Exp =   -170
+[PASS] [RANDOM      ] Test #764  | opa = 0xa1 (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =   -966 | Exp =   -966
+[PASS] [RANDOM      ] Test #765  | opa = 0x6f (unformatted write to stdout
+) | opb = 0x1 (  1) | DUT =    111 | Exp =    111
+[PASS] [RANDOM      ] Test #766  | opa = 0x50 (unformatted write to stdout
+) | opb = 0xb ( -5) | DUT =   -400 | Exp =   -400
+[PASS] [RANDOM      ] Test #767  | opa = 0xf2 (unformatted write to stdout
+) | opb = 0x9 ( -7) | DUT =  -1694 | Exp =  -1694
+[PASS] [RANDOM      ] Test #768  | opa = 0xf6 (unformatted write to stdout
+) | opb = 0x9 ( -7) | DUT =  -1722 | Exp =  -1722
+[PASS] [RANDOM      ] Test #769  | opa = 0x8a (unformatted write to stdout
+) | opb = 0x5 (  5) | DUT =    690 | Exp =    690
+[PASS] [RANDOM      ] Test #770  | opa = 0x7f (unformatted write to stdout
+) | opb = 0x7 (  7) | DUT =    889 | Exp =    889
+[PASS] [RANDOM      ] Test #771  | opa = 0xc5 (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =  -1182 | Exp =  -1182
+[PASS] [RANDOM      ] Test #772  | opa = 0x33 (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =   -204 | Exp =   -204
+[PASS] [RANDOM      ] Test #773  | opa = 0x5e (unformatted write to stdout
+) | opb = 0x0 (  0) | DUT =      0 | Exp =      0
+[PASS] [RANDOM      ] Test #774  | opa = 0x7e (unformatted write to stdout
+) | opb = 0x3 (  3) | DUT =    378 | Exp =    378
+[PASS] [RANDOM      ] Test #775  | opa = 0x52 (unformatted write to stdout
+) | opb = 0x4 (  4) | DUT =    328 | Exp =    328
+[PASS] [RANDOM      ] Test #776  | opa = 0x3e (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -124 | Exp =   -124
+[PASS] [RANDOM      ] Test #777  | opa = 0x8f (unformatted write to stdout
+) | opb = 0x3 (  3) | DUT =    429 | Exp =    429
+[PASS] [RANDOM      ] Test #778  | opa = 0xf4 (unformatted write to stdout
+) | opb = 0xb ( -5) | DUT =  -1220 | Exp =  -1220
+[PASS] [RANDOM      ] Test #779  | opa = 0x7a (unformatted write to stdout
+) | opb = 0x8 ( -8) | DUT =   -976 | Exp =   -976
+[PASS] [RANDOM      ] Test #780  | opa = 0xf0 (unformatted write to stdout
+) | opb = 0x2 (  2) | DUT =    480 | Exp =    480
+[PASS] [RANDOM      ] Test #781  | opa = 0x4a (unformatted write to stdout
+) | opb = 0x9 ( -7) | DUT =   -518 | Exp =   -518
+[PASS] [RANDOM      ] Test #782  | opa = 0x56 (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =   -516 | Exp =   -516
+[PASS] [RANDOM      ] Test #783  | opa = 0xef (unformatted write to stdout
+) | opb = 0xd ( -3) | DUT =   -717 | Exp =   -717
+[PASS] [RANDOM      ] Test #784  | opa = 0x96 (unformatted write to stdout
+) | opb = 0x5 (  5) | DUT =    750 | Exp =    750
+[PASS] [RANDOM      ] Test #785  | opa = 0x3 (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =     -3 | Exp =     -3
+[PASS] [RANDOM      ] Test #786  | opa = 0xbb (unformatted write to stdout
+) | opb = 0x1 (  1) | DUT =    187 | Exp =    187
+[PASS] [RANDOM      ] Test #787  | opa = 0x7 (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =     -7 | Exp =     -7
+[PASS] [RANDOM      ] Test #788  | opa = 0x9a (unformatted write to stdout
+) | opb = 0x7 (  7) | DUT =   1078 | Exp =   1078
+[PASS] [RANDOM      ] Test #789  | opa = 0xd9 (unformatted write to stdout
+) | opb = 0xb ( -5) | DUT =  -1085 | Exp =  -1085
+[PASS] [RANDOM      ] Test #790  | opa = 0xdd (unformatted write to stdout
+) | opb = 0x0 (  0) | DUT =      0 | Exp =      0
+[PASS] [RANDOM      ] Test #791  | opa = 0x36 (unformatted write to stdout
+) | opb = 0xb ( -5) | DUT =   -270 | Exp =   -270
+[PASS] [RANDOM      ] Test #792  | opa = 0x5e (unformatted write to stdout
+) | opb = 0x4 (  4) | DUT =    376 | Exp =    376
+[PASS] [RANDOM      ] Test #793  | opa = 0xac (unformatted write to stdout
+) | opb = 0x8 ( -8) | DUT =  -1376 | Exp =  -1376
+[PASS] [RANDOM      ] Test #794  | opa = 0x51 (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =    -81 | Exp =    -81
+[PASS] [RANDOM      ] Test #795  | opa = 0x44 (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =    -68 | Exp =    -68
+[PASS] [RANDOM      ] Test #796  | opa = 0x47 (unformatted write to stdout
+) | opb = 0x2 (  2) | DUT =    142 | Exp =    142
+[PASS] [RANDOM      ] Test #797  | opa = 0xe7 (unformatted write to stdout
+) | opb = 0x5 (  5) | DUT =   1155 | Exp =   1155
+[PASS] [RANDOM      ] Test #798  | opa = 0xe5 (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =   -916 | Exp =   -916
+[PASS] [RANDOM      ] Test #799  | opa = 0x27 (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =    -39 | Exp =    -39
+[PASS] [RANDOM      ] Test #800  | opa = 0xfa (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =   -250 | Exp =   -250
+[PASS] [RANDOM      ] Test #801  | opa = 0xf8 (unformatted write to stdout
+) | opb = 0x7 (  7) | DUT =   1736 | Exp =   1736
+[PASS] [RANDOM      ] Test #802  | opa = 0x38 (unformatted write to stdout
+) | opb = 0x4 (  4) | DUT =    224 | Exp =    224
+[PASS] [RANDOM      ] Test #803  | opa = 0x94 (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -296 | Exp =   -296
+[PASS] [RANDOM      ] Test #804  | opa = 0xc7 (unformatted write to stdout
+) | opb = 0x7 (  7) | DUT =   1393 | Exp =   1393
+[PASS] [RANDOM      ] Test #805  | opa = 0x76 (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -236 | Exp =   -236
+[PASS] [RANDOM      ] Test #806  | opa = 0x79 (unformatted write to stdout
+) | opb = 0xb ( -5) | DUT =   -605 | Exp =   -605
+[PASS] [RANDOM      ] Test #807  | opa = 0x40 (unformatted write to stdout
+) | opb = 0x7 (  7) | DUT =    448 | Exp =    448
+[PASS] [RANDOM      ] Test #808  | opa = 0x45 (unformatted write to stdout
+) | opb = 0x6 (  6) | DUT =    414 | Exp =    414
+[PASS] [RANDOM      ] Test #809  | opa = 0xf7 (unformatted write to stdout
+) | opb = 0x9 ( -7) | DUT =  -1729 | Exp =  -1729
+[PASS] [RANDOM      ] Test #810  | opa = 0x60 (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =    -96 | Exp =    -96
+[PASS] [RANDOM      ] Test #811  | opa = 0xcf (unformatted write to stdout
+) | opb = 0x8 ( -8) | DUT =  -1656 | Exp =  -1656
+[PASS] [RANDOM      ] Test #812  | opa = 0x1b (unformatted write to stdout
+) | opb = 0x4 (  4) | DUT =    108 | Exp =    108
+[PASS] [RANDOM      ] Test #813  | opa = 0x9a (unformatted write to stdout
+) | opb = 0x9 ( -7) | DUT =  -1078 | Exp =  -1078
+[PASS] [RANDOM      ] Test #814  | opa = 0x4e (unformatted write to stdout
+) | opb = 0xb ( -5) | DUT =   -390 | Exp =   -390
+[PASS] [RANDOM      ] Test #815  | opa = 0x72 (unformatted write to stdout
+) | opb = 0x6 (  6) | DUT =    684 | Exp =    684
+[PASS] [RANDOM      ] Test #816  | opa = 0x1 (unformatted write to stdout
+) | opb = 0x0 (  0) | DUT =      0 | Exp =      0
+[PASS] [RANDOM      ] Test #817  | opa = 0x40 (unformatted write to stdout
+) | opb = 0x4 (  4) | DUT =    256 | Exp =    256
+[PASS] [RANDOM      ] Test #818  | opa = 0xa0 (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =   -960 | Exp =   -960
+[PASS] [RANDOM      ] Test #819  | opa = 0x39 (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =    -57 | Exp =    -57
+[PASS] [RANDOM      ] Test #820  | opa = 0xe3 (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =   -227 | Exp =   -227
+[PASS] [RANDOM      ] Test #821  | opa = 0x6e (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =   -110 | Exp =   -110
+[PASS] [RANDOM      ] Test #822  | opa = 0x35 (unformatted write to stdout
+) | opb = 0x1 (  1) | DUT =     53 | Exp =     53
+[PASS] [RANDOM      ] Test #823  | opa = 0xe (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =    -14 | Exp =    -14
+[PASS] [RANDOM      ] Test #824  | opa = 0x47 (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =    -71 | Exp =    -71
+[PASS] [RANDOM      ] Test #825  | opa = 0xea (unformatted write to stdout
+) | opb = 0xd ( -3) | DUT =   -702 | Exp =   -702
+[PASS] [RANDOM      ] Test #826  | opa = 0x20 (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =   -192 | Exp =   -192
+[PASS] [RANDOM      ] Test #827  | opa = 0x6c (unformatted write to stdout
+) | opb = 0x9 ( -7) | DUT =   -756 | Exp =   -756
+[PASS] [RANDOM      ] Test #828  | opa = 0xce (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =  -1236 | Exp =  -1236
+[PASS] [RANDOM      ] Test #829  | opa = 0x1 (unformatted write to stdout
+) | opb = 0x6 (  6) | DUT =      6 | Exp =      6
+[PASS] [RANDOM      ] Test #830  | opa = 0x8a (unformatted write to stdout
+) | opb = 0x3 (  3) | DUT =    414 | Exp =    414
+[PASS] [RANDOM      ] Test #831  | opa = 0xb6 (unformatted write to stdout
+) | opb = 0x5 (  5) | DUT =    910 | Exp =    910
+[PASS] [RANDOM      ] Test #832  | opa = 0xf7 (unformatted write to stdout
+) | opb = 0xd ( -3) | DUT =   -741 | Exp =   -741
+[PASS] [RANDOM      ] Test #833  | opa = 0x7a (unformatted write to stdout
+) | opb = 0x2 (  2) | DUT =    244 | Exp =    244
+[PASS] [RANDOM      ] Test #834  | opa = 0xca (unformatted write to stdout
+) | opb = 0xd ( -3) | DUT =   -606 | Exp =   -606
+[PASS] [RANDOM      ] Test #835  | opa = 0x4c (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -152 | Exp =   -152
+[PASS] [RANDOM      ] Test #836  | opa = 0x7 (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =    -42 | Exp =    -42
+[PASS] [RANDOM      ] Test #837  | opa = 0x46 (unformatted write to stdout
+) | opb = 0x5 (  5) | DUT =    350 | Exp =    350
+[PASS] [RANDOM      ] Test #838  | opa = 0xa3 (unformatted write to stdout
+) | opb = 0x7 (  7) | DUT =   1141 | Exp =   1141
+[PASS] [RANDOM      ] Test #839  | opa = 0x4b (unformatted write to stdout
+) | opb = 0x7 (  7) | DUT =    525 | Exp =    525
+[PASS] [RANDOM      ] Test #840  | opa = 0x27 (unformatted write to stdout
+) | opb = 0xb ( -5) | DUT =   -195 | Exp =   -195
+[PASS] [RANDOM      ] Test #841  | opa = 0xcf (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =   -207 | Exp =   -207
+[PASS] [RANDOM      ] Test #842  | opa = 0xbc (unformatted write to stdout
+) | opb = 0xb ( -5) | DUT =   -940 | Exp =   -940
+[PASS] [RANDOM      ] Test #843  | opa = 0xf7 (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =  -1482 | Exp =  -1482
+[PASS] [RANDOM      ] Test #844  | opa = 0xac (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -344 | Exp =   -344
+[PASS] [RANDOM      ] Test #845  | opa = 0x6 (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =    -12 | Exp =    -12
+[PASS] [RANDOM      ] Test #846  | opa = 0x40 (unformatted write to stdout
+) | opb = 0x5 (  5) | DUT =    320 | Exp =    320
+[PASS] [RANDOM      ] Test #847  | opa = 0xe1 (unformatted write to stdout
+) | opb = 0x6 (  6) | DUT =   1350 | Exp =   1350
+[PASS] [RANDOM      ] Test #848  | opa = 0x94 (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =   -148 | Exp =   -148
+[PASS] [RANDOM      ] Test #849  | opa = 0x17 (unformatted write to stdout
+) | opb = 0x5 (  5) | DUT =    115 | Exp =    115
+[PASS] [RANDOM      ] Test #850  | opa = 0xb6 (unformatted write to stdout
+) | opb = 0x3 (  3) | DUT =    546 | Exp =    546
+[PASS] [RANDOM      ] Test #851  | opa = 0xb2 (unformatted write to stdout
+) | opb = 0x9 ( -7) | DUT =  -1246 | Exp =  -1246
+[PASS] [RANDOM      ] Test #852  | opa = 0x35 (unformatted write to stdout
+) | opb = 0x9 ( -7) | DUT =   -371 | Exp =   -371
+[PASS] [RANDOM      ] Test #853  | opa = 0xcf (unformatted write to stdout
+) | opb = 0x3 (  3) | DUT =    621 | Exp =    621
+[PASS] [RANDOM      ] Test #854  | opa = 0xfe (unformatted write to stdout
+) | opb = 0x3 (  3) | DUT =    762 | Exp =    762
+[PASS] [RANDOM      ] Test #855  | opa = 0xac (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =   -688 | Exp =   -688
+[PASS] [RANDOM      ] Test #856  | opa = 0x13 (unformatted write to stdout
+) | opb = 0x6 (  6) | DUT =    114 | Exp =    114
+[PASS] [RANDOM      ] Test #857  | opa = 0xb9 (unformatted write to stdout
+) | opb = 0x2 (  2) | DUT =    370 | Exp =    370
+[PASS] [RANDOM      ] Test #858  | opa = 0x8b (unformatted write to stdout
+) | opb = 0xb ( -5) | DUT =   -695 | Exp =   -695
+[PASS] [RANDOM      ] Test #859  | opa = 0xdb (unformatted write to stdout
+) | opb = 0x6 (  6) | DUT =   1314 | Exp =   1314
+[PASS] [RANDOM      ] Test #860  | opa = 0xee (unformatted write to stdout
+) | opb = 0x3 (  3) | DUT =    714 | Exp =    714
+[PASS] [RANDOM      ] Test #861  | opa = 0xe1 (unformatted write to stdout
+) | opb = 0x0 (  0) | DUT =      0 | Exp =      0
+[PASS] [RANDOM      ] Test #862  | opa = 0xc3 (unformatted write to stdout
+) | opb = 0x7 (  7) | DUT =   1365 | Exp =   1365
+[PASS] [RANDOM      ] Test #863  | opa = 0xf1 (unformatted write to stdout
+) | opb = 0x1 (  1) | DUT =    241 | Exp =    241
+[PASS] [RANDOM      ] Test #864  | opa = 0xfd (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -506 | Exp =   -506
+[PASS] [RANDOM      ] Test #865  | opa = 0x4e (unformatted write to stdout
+) | opb = 0x6 (  6) | DUT =    468 | Exp =    468
+[PASS] [RANDOM      ] Test #866  | opa = 0x92 (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =   -146 | Exp =   -146
+[PASS] [RANDOM      ] Test #867  | opa = 0xd8 (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =   -216 | Exp =   -216
+[PASS] [RANDOM      ] Test #868  | opa = 0x5c (unformatted write to stdout
+) | opb = 0x9 ( -7) | DUT =   -644 | Exp =   -644
+[PASS] [RANDOM      ] Test #869  | opa = 0x25 (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =   -148 | Exp =   -148
+[PASS] [RANDOM      ] Test #870  | opa = 0x2f (unformatted write to stdout
+) | opb = 0x3 (  3) | DUT =    141 | Exp =    141
+[PASS] [RANDOM      ] Test #871  | opa = 0xf4 (unformatted write to stdout
+) | opb = 0x6 (  6) | DUT =   1464 | Exp =   1464
+[PASS] [RANDOM      ] Test #872  | opa = 0xa5 (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =   -660 | Exp =   -660
+[PASS] [RANDOM      ] Test #873  | opa = 0x87 (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -270 | Exp =   -270
+[PASS] [RANDOM      ] Test #874  | opa = 0x12 (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =    -36 | Exp =    -36
+[PASS] [RANDOM      ] Test #875  | opa = 0xb (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =    -44 | Exp =    -44
+[PASS] [RANDOM      ] Test #876  | opa = 0xb9 (unformatted write to stdout
+) | opb = 0x7 (  7) | DUT =   1295 | Exp =   1295
+[PASS] [RANDOM      ] Test #877  | opa = 0x15 (unformatted write to stdout
+) | opb = 0x9 ( -7) | DUT =   -147 | Exp =   -147
+[PASS] [RANDOM      ] Test #878  | opa = 0x10 (unformatted write to stdout
+) | opb = 0x6 (  6) | DUT =     96 | Exp =     96
+[PASS] [RANDOM      ] Test #879  | opa = 0xec (unformatted write to stdout
+) | opb = 0x9 ( -7) | DUT =  -1652 | Exp =  -1652
+[PASS] [RANDOM      ] Test #880  | opa = 0xc1 (unformatted write to stdout
+) | opb = 0x4 (  4) | DUT =    772 | Exp =    772
+[PASS] [RANDOM      ] Test #881  | opa = 0x26 (unformatted write to stdout
+) | opb = 0x7 (  7) | DUT =    266 | Exp =    266
+[PASS] [RANDOM      ] Test #882  | opa = 0xb7 (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =   -183 | Exp =   -183
+[PASS] [RANDOM      ] Test #883  | opa = 0xbb (unformatted write to stdout
+) | opb = 0x6 (  6) | DUT =   1122 | Exp =   1122
+[PASS] [RANDOM      ] Test #884  | opa = 0x58 (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -176 | Exp =   -176
+[PASS] [RANDOM      ] Test #885  | opa = 0xb1 (unformatted write to stdout
+) | opb = 0x2 (  2) | DUT =    354 | Exp =    354
+[PASS] [RANDOM      ] Test #886  | opa = 0xcb (unformatted write to stdout
+) | opb = 0x9 ( -7) | DUT =  -1421 | Exp =  -1421
+[PASS] [RANDOM      ] Test #887  | opa = 0xf1 (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =  -1446 | Exp =  -1446
+[PASS] [RANDOM      ] Test #888  | opa = 0xe2 (unformatted write to stdout
+) | opb = 0xd ( -3) | DUT =   -678 | Exp =   -678
+[PASS] [RANDOM      ] Test #889  | opa = 0xe5 (unformatted write to stdout
+) | opb = 0x6 (  6) | DUT =   1374 | Exp =   1374
+[PASS] [RANDOM      ] Test #890  | opa = 0xff (unformatted write to stdout
+) | opb = 0x6 (  6) | DUT =   1530 | Exp =   1530
+[PASS] [RANDOM      ] Test #891  | opa = 0xa (unformatted write to stdout
+) | opb = 0xd ( -3) | DUT =    -30 | Exp =    -30
+[PASS] [RANDOM      ] Test #892  | opa = 0x1e (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =    -60 | Exp =    -60
+[PASS] [RANDOM      ] Test #893  | opa = 0x6f (unformatted write to stdout
+) | opb = 0x7 (  7) | DUT =    777 | Exp =    777
+[PASS] [RANDOM      ] Test #894  | opa = 0xd3 (unformatted write to stdout
+) | opb = 0x0 (  0) | DUT =      0 | Exp =      0
+[PASS] [RANDOM      ] Test #895  | opa = 0xe9 (unformatted write to stdout
+) | opb = 0x8 ( -8) | DUT =  -1864 | Exp =  -1864
+[PASS] [RANDOM      ] Test #896  | opa = 0xdc (unformatted write to stdout
+) | opb = 0xb ( -5) | DUT =  -1100 | Exp =  -1100
+[PASS] [RANDOM      ] Test #897  | opa = 0x70 (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =   -112 | Exp =   -112
+[PASS] [RANDOM      ] Test #898  | opa = 0xab (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =   -171 | Exp =   -171
+[PASS] [RANDOM      ] Test #899  | opa = 0xe2 (unformatted write to stdout
+) | opb = 0x3 (  3) | DUT =    678 | Exp =    678
+[PASS] [RANDOM      ] Test #900  | opa = 0xee (unformatted write to stdout
+) | opb = 0x6 (  6) | DUT =   1428 | Exp =   1428
+[PASS] [RANDOM      ] Test #901  | opa = 0x28 (unformatted write to stdout
+) | opb = 0x4 (  4) | DUT =    160 | Exp =    160
+[PASS] [RANDOM      ] Test #902  | opa = 0x12 (unformatted write to stdout
+) | opb = 0x9 ( -7) | DUT =   -126 | Exp =   -126
+[PASS] [RANDOM      ] Test #903  | opa = 0x7d (unformatted write to stdout
+) | opb = 0x4 (  4) | DUT =    500 | Exp =    500
+[PASS] [RANDOM      ] Test #904  | opa = 0x3d (unformatted write to stdout
+) | opb = 0x5 (  5) | DUT =    305 | Exp =    305
+[PASS] [RANDOM      ] Test #905  | opa = 0x4c (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -152 | Exp =   -152
+[PASS] [RANDOM      ] Test #906  | opa = 0x2e (unformatted write to stdout
+) | opb = 0x2 (  2) | DUT =     92 | Exp =     92
+[PASS] [RANDOM      ] Test #907  | opa = 0xe5 (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =   -916 | Exp =   -916
+[PASS] [RANDOM      ] Test #908  | opa = 0x1a (unformatted write to stdout
+) | opb = 0x5 (  5) | DUT =    130 | Exp =    130
+[PASS] [RANDOM      ] Test #909  | opa = 0xb (unformatted write to stdout
+) | opb = 0x6 (  6) | DUT =     66 | Exp =     66
+[PASS] [RANDOM      ] Test #910  | opa = 0x61 (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =   -582 | Exp =   -582
+[PASS] [RANDOM      ] Test #911  | opa = 0x6 (unformatted write to stdout
+) | opb = 0x8 ( -8) | DUT =    -48 | Exp =    -48
+[PASS] [RANDOM      ] Test #912  | opa = 0xb7 (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -366 | Exp =   -366
+[PASS] [RANDOM      ] Test #913  | opa = 0xcb (unformatted write to stdout
+) | opb = 0xd ( -3) | DUT =   -609 | Exp =   -609
+[PASS] [RANDOM      ] Test #914  | opa = 0x1f (unformatted write to stdout
+) | opb = 0x8 ( -8) | DUT =   -248 | Exp =   -248
+[PASS] [RANDOM      ] Test #915  | opa = 0x5f (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -190 | Exp =   -190
+[PASS] [RANDOM      ] Test #916  | opa = 0xd2 (unformatted write to stdout
+) | opb = 0x7 (  7) | DUT =   1470 | Exp =   1470
+[PASS] [RANDOM      ] Test #917  | opa = 0x8b (unformatted write to stdout
+) | opb = 0x3 (  3) | DUT =    417 | Exp =    417
+[PASS] [RANDOM      ] Test #918  | opa = 0xf1 (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =   -241 | Exp =   -241
+[PASS] [RANDOM      ] Test #919  | opa = 0x7f (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -254 | Exp =   -254
+[PASS] [RANDOM      ] Test #920  | opa = 0x94 (unformatted write to stdout
+) | opb = 0x5 (  5) | DUT =    740 | Exp =    740
+[PASS] [RANDOM      ] Test #921  | opa = 0xfd (unformatted write to stdout
+) | opb = 0x7 (  7) | DUT =   1771 | Exp =   1771
+[PASS] [RANDOM      ] Test #922  | opa = 0xa7 (unformatted write to stdout
+) | opb = 0xb ( -5) | DUT =   -835 | Exp =   -835
+[PASS] [RANDOM      ] Test #923  | opa = 0x35 (unformatted write to stdout
+) | opb = 0x0 (  0) | DUT =      0 | Exp =      0
+[PASS] [RANDOM      ] Test #924  | opa = 0x96 (unformatted write to stdout
+) | opb = 0x4 (  4) | DUT =    600 | Exp =    600
+[PASS] [RANDOM      ] Test #925  | opa = 0x4f (unformatted write to stdout
+) | opb = 0x0 (  0) | DUT =      0 | Exp =      0
+[PASS] [RANDOM      ] Test #926  | opa = 0xbe (unformatted write to stdout
+) | opb = 0xd ( -3) | DUT =   -570 | Exp =   -570
+[PASS] [RANDOM      ] Test #927  | opa = 0x71 (unformatted write to stdout
+) | opb = 0x9 ( -7) | DUT =   -791 | Exp =   -791
+[PASS] [RANDOM      ] Test #928  | opa = 0x25 (unformatted write to stdout
+) | opb = 0x8 ( -8) | DUT =   -296 | Exp =   -296
+[PASS] [RANDOM      ] Test #929  | opa = 0x9f (unformatted write to stdout
+) | opb = 0x5 (  5) | DUT =    795 | Exp =    795
+[PASS] [RANDOM      ] Test #930  | opa = 0xf1 (unformatted write to stdout
+) | opb = 0x0 (  0) | DUT =      0 | Exp =      0
+[PASS] [RANDOM      ] Test #931  | opa = 0xd2 (unformatted write to stdout
+) | opb = 0x4 (  4) | DUT =    840 | Exp =    840
+[PASS] [RANDOM      ] Test #932  | opa = 0xa4 (unformatted write to stdout
+) | opb = 0x0 (  0) | DUT =      0 | Exp =      0
+[PASS] [RANDOM      ] Test #933  | opa = 0x25 (unformatted write to stdout
+) | opb = 0xb ( -5) | DUT =   -185 | Exp =   -185
+[PASS] [RANDOM      ] Test #934  | opa = 0xff (unformatted write to stdout
+) | opb = 0xb ( -5) | DUT =  -1275 | Exp =  -1275
+[PASS] [RANDOM      ] Test #935  | opa = 0xe8 (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =  -1392 | Exp =  -1392
+[PASS] [RANDOM      ] Test #936  | opa = 0x30 (unformatted write to stdout
+) | opb = 0xd ( -3) | DUT =   -144 | Exp =   -144
+[PASS] [RANDOM      ] Test #937  | opa = 0xa (unformatted write to stdout
+) | opb = 0x2 (  2) | DUT =     20 | Exp =     20
+[PASS] [RANDOM      ] Test #938  | opa = 0x9c (unformatted write to stdout
+) | opb = 0xb ( -5) | DUT =   -780 | Exp =   -780
+[PASS] [RANDOM      ] Test #939  | opa = 0x1e (unformatted write to stdout
+) | opb = 0x1 (  1) | DUT =     30 | Exp =     30
+[PASS] [RANDOM      ] Test #940  | opa = 0x68 (unformatted write to stdout
+) | opb = 0x9 ( -7) | DUT =   -728 | Exp =   -728
+[PASS] [RANDOM      ] Test #941  | opa = 0xef (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -478 | Exp =   -478
+[PASS] [RANDOM      ] Test #942  | opa = 0x97 (unformatted write to stdout
+) | opb = 0x8 ( -8) | DUT =  -1208 | Exp =  -1208
+[PASS] [RANDOM      ] Test #943  | opa = 0x60 (unformatted write to stdout
+) | opb = 0x9 ( -7) | DUT =   -672 | Exp =   -672
+[PASS] [RANDOM      ] Test #944  | opa = 0x65 (unformatted write to stdout
+) | opb = 0x5 (  5) | DUT =    505 | Exp =    505
+[PASS] [RANDOM      ] Test #945  | opa = 0x24 (unformatted write to stdout
+) | opb = 0x4 (  4) | DUT =    144 | Exp =    144
+[PASS] [RANDOM      ] Test #946  | opa = 0x2a (unformatted write to stdout
+) | opb = 0x9 ( -7) | DUT =   -294 | Exp =   -294
+[PASS] [RANDOM      ] Test #947  | opa = 0x67 (unformatted write to stdout
+) | opb = 0x3 (  3) | DUT =    309 | Exp =    309
+[PASS] [RANDOM      ] Test #948  | opa = 0xed (unformatted write to stdout
+) | opb = 0x8 ( -8) | DUT =  -1896 | Exp =  -1896
+[PASS] [RANDOM      ] Test #949  | opa = 0x91 (unformatted write to stdout
+) | opb = 0x9 ( -7) | DUT =  -1015 | Exp =  -1015
+[PASS] [RANDOM      ] Test #950  | opa = 0x82 (unformatted write to stdout
+) | opb = 0x2 (  2) | DUT =    260 | Exp =    260
+[PASS] [RANDOM      ] Test #951  | opa = 0xb7 (unformatted write to stdout
+) | opb = 0x8 ( -8) | DUT =  -1464 | Exp =  -1464
+[PASS] [RANDOM      ] Test #952  | opa = 0xc8 (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =   -800 | Exp =   -800
+[PASS] [RANDOM      ] Test #953  | opa = 0x4e (unformatted write to stdout
+) | opb = 0xd ( -3) | DUT =   -234 | Exp =   -234
+[PASS] [RANDOM      ] Test #954  | opa = 0x6f (unformatted write to stdout
+) | opb = 0x5 (  5) | DUT =    555 | Exp =    555
+[PASS] [RANDOM      ] Test #955  | opa = 0x53 (unformatted write to stdout
+) | opb = 0xb ( -5) | DUT =   -415 | Exp =   -415
+[PASS] [RANDOM      ] Test #956  | opa = 0x4f (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =   -316 | Exp =   -316
+[PASS] [RANDOM      ] Test #957  | opa = 0xe8 (unformatted write to stdout
+) | opb = 0x8 ( -8) | DUT =  -1856 | Exp =  -1856
+[PASS] [RANDOM      ] Test #958  | opa = 0x48 (unformatted write to stdout
+) | opb = 0xd ( -3) | DUT =   -216 | Exp =   -216
+[PASS] [RANDOM      ] Test #959  | opa = 0x1a (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =    -52 | Exp =    -52
+[PASS] [RANDOM      ] Test #960  | opa = 0x25 (unformatted write to stdout
+) | opb = 0x4 (  4) | DUT =    148 | Exp =    148
+[PASS] [RANDOM      ] Test #961  | opa = 0x59 (unformatted write to stdout
+) | opb = 0xb ( -5) | DUT =   -445 | Exp =   -445
+[PASS] [RANDOM      ] Test #962  | opa = 0x0 (unformatted write to stdout
+) | opb = 0x2 (  2) | DUT =      0 | Exp =      0
+[PASS] [RANDOM      ] Test #963  | opa = 0xd4 (unformatted write to stdout
+) | opb = 0xd ( -3) | DUT =   -636 | Exp =   -636
+[PASS] [RANDOM      ] Test #964  | opa = 0x26 (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =    -38 | Exp =    -38
+[PASS] [RANDOM      ] Test #965  | opa = 0xb2 (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =  -1068 | Exp =  -1068
+[PASS] [RANDOM      ] Test #966  | opa = 0x6a (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =   -424 | Exp =   -424
+[PASS] [RANDOM      ] Test #967  | opa = 0xf6 (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =   -246 | Exp =   -246
+[PASS] [RANDOM      ] Test #968  | opa = 0x7e (unformatted write to stdout
+) | opb = 0x6 (  6) | DUT =    756 | Exp =    756
+[PASS] [RANDOM      ] Test #969  | opa = 0x71 (unformatted write to stdout
+) | opb = 0x9 ( -7) | DUT =   -791 | Exp =   -791
+[PASS] [RANDOM      ] Test #970  | opa = 0xa9 (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =   -676 | Exp =   -676
+[PASS] [RANDOM      ] Test #971  | opa = 0x11 (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =    -34 | Exp =    -34
+[PASS] [RANDOM      ] Test #972  | opa = 0xf9 (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =   -249 | Exp =   -249
+[PASS] [RANDOM      ] Test #973  | opa = 0x85 (unformatted write to stdout
+) | opb = 0x5 (  5) | DUT =    665 | Exp =    665
+[PASS] [RANDOM      ] Test #974  | opa = 0xd6 (unformatted write to stdout
+) | opb = 0x3 (  3) | DUT =    642 | Exp =    642
+[PASS] [RANDOM      ] Test #975  | opa = 0xed (unformatted write to stdout
+) | opb = 0xd ( -3) | DUT =   -711 | Exp =   -711
+[PASS] [RANDOM      ] Test #976  | opa = 0x7c (unformatted write to stdout
+) | opb = 0x1 (  1) | DUT =    124 | Exp =    124
+[PASS] [RANDOM      ] Test #977  | opa = 0xe (unformatted write to stdout
+) | opb = 0x6 (  6) | DUT =     84 | Exp =     84
+[PASS] [RANDOM      ] Test #978  | opa = 0xd4 (unformatted write to stdout
+) | opb = 0x7 (  7) | DUT =   1484 | Exp =   1484
+[PASS] [RANDOM      ] Test #979  | opa = 0x5c (unformatted write to stdout
+) | opb = 0x5 (  5) | DUT =    460 | Exp =    460
+[PASS] [RANDOM      ] Test #980  | opa = 0xb0 (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =   -176 | Exp =   -176
+[PASS] [RANDOM      ] Test #981  | opa = 0xba (unformatted write to stdout
+) | opb = 0x5 (  5) | DUT =    930 | Exp =    930
+[PASS] [RANDOM      ] Test #982  | opa = 0x53 (unformatted write to stdout
+) | opb = 0x7 (  7) | DUT =    581 | Exp =    581
+[PASS] [RANDOM      ] Test #983  | opa = 0xbc (unformatted write to stdout
+) | opb = 0x4 (  4) | DUT =    752 | Exp =    752
+[PASS] [RANDOM      ] Test #984  | opa = 0xdf (unformatted write to stdout
+) | opb = 0xb ( -5) | DUT =  -1115 | Exp =  -1115
+[PASS] [RANDOM      ] Test #985  | opa = 0xe6 (unformatted write to stdout
+) | opb = 0xe ( -2) | DUT =   -460 | Exp =   -460
+[PASS] [RANDOM      ] Test #986  | opa = 0x2 (unformatted write to stdout
+) | opb = 0xd ( -3) | DUT =     -6 | Exp =     -6
+[PASS] [RANDOM      ] Test #987  | opa = 0x20 (unformatted write to stdout
+) | opb = 0x9 ( -7) | DUT =   -224 | Exp =   -224
+[PASS] [RANDOM      ] Test #988  | opa = 0x0 (unformatted write to stdout
+) | opb = 0x9 ( -7) | DUT =      0 | Exp =      0
+[PASS] [RANDOM      ] Test #989  | opa = 0x5e (unformatted write to stdout
+) | opb = 0xb ( -5) | DUT =   -470 | Exp =   -470
+[PASS] [RANDOM      ] Test #990  | opa = 0xf4 (unformatted write to stdout
+) | opb = 0x8 ( -8) | DUT =  -1952 | Exp =  -1952
+[PASS] [RANDOM      ] Test #991  | opa = 0x35 (unformatted write to stdout
+) | opb = 0x0 (  0) | DUT =      0 | Exp =      0
+[PASS] [RANDOM      ] Test #992  | opa = 0xee (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =   -952 | Exp =   -952
+[PASS] [RANDOM      ] Test #993  | opa = 0xdb (unformatted write to stdout
+) | opb = 0x3 (  3) | DUT =    657 | Exp =    657
+[PASS] [RANDOM      ] Test #994  | opa = 0x34 (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =    -52 | Exp =    -52
+[PASS] [RANDOM      ] Test #995  | opa = 0xd0 (unformatted write to stdout
+) | opb = 0x2 (  2) | DUT =    416 | Exp =    416
+[PASS] [RANDOM      ] Test #996  | opa = 0xdb (unformatted write to stdout
+) | opb = 0xa ( -6) | DUT =  -1314 | Exp =  -1314
+[PASS] [RANDOM      ] Test #997  | opa = 0x25 (unformatted write to stdout
+) | opb = 0x5 (  5) | DUT =    185 | Exp =    185
+[PASS] [RANDOM      ] Test #998  | opa = 0x86 (unformatted write to stdout
+) | opb = 0x6 (  6) | DUT =    804 | Exp =    804
+[PASS] [RANDOM      ] Test #999  | opa = 0x2a (unformatted write to stdout
+) | opb = 0x4 (  4) | DUT =    168 | Exp =    168
+[PASS] [RANDOM      ] Test #1000 | opa = 0xe6 (unformatted write to stdout
+) | opb = 0x0 (  0) | DUT =      0 | Exp =      0
+[PASS] [RANDOM      ] Test #1001 | opa = 0xed (unformatted write to stdout
+) | opb = 0xd ( -3) | DUT =   -711 | Exp =   -711
+[PASS] [RANDOM      ] Test #1002 | opa = 0x5e (unformatted write to stdout
+) | opb = 0x3 (  3) | DUT =    282 | Exp =    282
+[PASS] [RANDOM      ] Test #1003 | opa = 0xd6 (unformatted write to stdout
+) | opb = 0x2 (  2) | DUT =    428 | Exp =    428
+[PASS] [RANDOM      ] Test #1004 | opa = 0xe7 (unformatted write to stdout
+) | opb = 0xf ( -1) | DUT =   -231 | Exp =   -231
+[PASS] [RANDOM      ] Test #1005 | opa = 0x55 (unformatted write to stdout
+) | opb = 0xc ( -4) | DUT =   -340 | Exp =   -340
+[PASS] [RANDOM      ] Test #1006 | opa = 0x1 (unformatted write to stdout
+) | opb = 0xb ( -5) | DUT =     -5 | Exp =     -5
+[PASS] [RANDOM      ] Test #1007 | opa = 0x5c (unformatted write to stdout
+) | opb = 0x1 (  1) | DUT =     92 | Exp =     92
+[PASS] [RANDOM      ] Test #1008 | opa = 0x6b (unformatted write to stdout
+) | opb = 0x4 (  4) | DUT =    428 | Exp =    428
 
+===============================================================================
+ Total Executed: 1008 | Passed: 1008 | Failed: 0
+ >>> ALL TESTS PASSED FOR UNSIGNED PIXEL x SIGNED KERNEL! <<<
+===============================================================================
 
-Timeout...
-
-
-Simulation complete via $finish(1) at time 400 US + 0
-../01_tb/tlib.svh:23             $finish;
+Simulation complete via $finish(1) at time 5040 NS + 0
+../01_tb/tb_mul.sv:97     $finish;
 xcelium> exit
-TOOL:	xrun(64)	20.09-s001: Exiting on Nov 05, 2026 at 22:28:18 +07  (total: 00:00:00)
+TOOL:	xrun(64)	20.09-s001: Exiting on Nov 05, 2026 at 23:38:37 +07  (total: 00:00:01)

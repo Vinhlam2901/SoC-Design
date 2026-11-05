@@ -6,7 +6,7 @@ module alu (
   output wire  [31:0] o_alu_data
   );
   wire        slt, sltu;
-  wire [31:0] rd_and, rd_or, rd_xor, rd_sra, rd_srl, rd_sll, rd_add, rd_sub, rd_slt, rd_sltu;
+  wire [31:0] rd_and, rd_or, rd_xor, rd_sra, rd_srl, rd_sll, rd_add, rd_sub;
   wire        cout_add, cout_sub, rd_equals, rd_equalu;
   and_32bit     and_module      (
                                 .rs1_i(i_op_a),
@@ -24,20 +24,13 @@ module alu (
                                 .rs2_i(i_op_b),
                                 .rd_o(rd_xor)
                                 ); // XOR
-  add_subtract  subtract_module (
+  add_subtract  addsub_module   (
                                 .a_i      (i_op_a),
                                 .b_i      (i_op_b),
-                                .cin_i    (~i_alu_op[0]),
+                                .cin_i    (i_alu_op == 4'b0001),
                                 .result_o (rd_sub),
                                 .cout_o   (cout_sub)
-                                ); //SUB
-  // add_subtract  add_module       (
-  //                               .a_i      (i_op_a),
-  //                               .b_i      (i_op_b),
-  //                               .cin_i    (1'b0),
-  //                               .result_o (rd_add),
-  //                               .cout_o   (cout_add)
-  //                               ); //ADD
+                                ); // cin_i = 0: add, cin_i = 1: subtract
   brcomp        slt_module      (
                                 .i_rs1_data(i_op_a),
                                 .i_rs2_data(i_op_b),
@@ -67,15 +60,12 @@ module alu (
                                 .rs2_data   (i_op_b),
                                 .rd_data    (rd_sra)
                                 ); //SRA
-  assign rd_slt  = {31'b0, slt};
-  assign rd_sltu = {31'b0, sltu};
-  //mux
   mux_16to1  mux1 (
-                    .d0   (rd_add),
+                    .d0   (rd_sub),
                     .d1   (rd_sub),
                     .d2   (rd_sll),
-                    .d3   (rd_slt),
-                    .d4   (rd_sltu),
+                    .d3   ({31'b0, slt}),
+                    .d4   ({31'b0, sltu}),
                     .d5   (rd_xor),
                     .d6   (rd_srl),
                     .d7   (rd_sra),

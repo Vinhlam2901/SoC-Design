@@ -8,14 +8,12 @@
 //=====================================================================================================
 import package_param::*;
 module immgen (
-    input  wire [31:0] inst_i,
-    output reg  [31:0] imm_o
+  input  wire [31:0] inst_i,
+  output reg  [31:0] imm_o
 );
-
   reg is_msb;
   always_comb begin : immgen_msb_extend
     case (inst_i[6:0])
-      //Itype msb extend when func3 == 0, 2, 4, 5, 6, 7,
       IITYPE,
       ITYPE  : is_msb = (inst_i[14] | ~inst_i[12]);
       default: is_msb = 1'b0;

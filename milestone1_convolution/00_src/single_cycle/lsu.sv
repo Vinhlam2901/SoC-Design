@@ -178,7 +178,7 @@ module lsu (
   assign is_hex03  = is_out && (~i_lsu_addr[14] &&  i_lsu_addr[13] && ~i_lsu_addr[12]); // 0x1000_2xxx
   assign is_hex47  = is_out && (~i_lsu_addr[14] &&  i_lsu_addr[13] &&  i_lsu_addr[12]); // 0x1000_3xxx
   assign is_lcd    = is_out && ( i_lsu_addr[14] && ~i_lsu_addr[13] && ~i_lsu_addr[12]); // 0x1000_4xxx
-  assign is_sw     = is_in  && ( i_lsu_addr[16] && ~i_lsu_addr[13]                  ); // 0x1001_0xxx
+  assign is_sw     = is_in  && ( i_lsu_addr[16] && ~i_lsu_addr[13]                  );  // 0x1001_0xxx
 
   memory memory (
                 .i_clk  (i_clk),
