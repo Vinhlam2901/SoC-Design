@@ -9,78 +9,105 @@
 //============================================================================================================
 import package_param::*;
 module lsu (
-  input  wire        i_clk,
-  input  wire        i_reset,
+  input  logic        i_clk,
+  input  logic        i_reset,
 
-  input  wire [31:0] i_lsu_addr,
-  input  wire [31:0] i_st_data,
-  input  wire        i_lsu_wren,
-  input  wire [2:0]  i_func3,
+  input  logic [31:0] i_lsu_addr,
+  input  logic [31:0] i_st_data,
+  input  logic        i_lsu_wren,
+  input  logic [2:0]  i_func3,
 
-  input  wire [31:0] i_io_sw,
+  input  logic [31:0] i_gpio_in,
+  input  logic [31:0] i_mul_status,   // bit[0]: busy, bit[1]: done. Read 1 to check if the multiplication is done.
+  input  logic [31:0] i_mul_result,
+  input  logic [31:0] i_conv_status,  // bit[0]: busy, bit[1]: done. Read 1 to check if the convolution is done.
 
-  output reg  [6:0]  o_io_hex0,
-  output reg  [6:0]  o_io_hex1,
-  output reg  [6:0]  o_io_hex2,
-  output reg  [6:0]  o_io_hex3,
-  output reg  [6:0]  o_io_hex4,
-  output reg  [6:0]  o_io_hex5,
-  output reg  [6:0]  o_io_hex6,
-  output reg  [6:0]  o_io_hex7,
+  output logic [31:0] i_mul_a,
+  output logic [31:0] i_mul_b,
+  output logic [31:0] i_mul_ctrl,     // bit[0]: start. Write 1 to start the multiplication, bit[1]: reset. Write 1 to reset the multiplier.
 
-  output reg  [31:0] o_ld_data,
+  output logic [31:0] i_conv_ctrl,    // bit[0]: start. Write 1 to start the convolution.
 
-  output reg  [31:0] o_io_ledr,
+  output logic [31:0] i_img_width,
+  output logic [31:0] i_img_height,
+  output logic [31:0] i_img_addr,
+  output logic [31:0] i_img_data,
+  output logic [31:0] i_ker_addr,
+  output logic [31:0] i_ker_data,
 
-  output reg  [31:0] o_io_ledg,
-
-  output reg  [31:0] o_io_lcd
+  output logic [31:0] o_out_addr,
+  output logic [31:0] o_out_data,
+  
+  output logic [31:0] o_ld_data,
+  output logic [31:0] o_led_out
 );
 
 //====================================DECLARATION==============================================================
-  wire        is_ledr;
-  wire        is_ledg;
-  wire        is_hex03;
-  wire        is_hex47;
-  wire        is_lcd;
-  wire        is_sw;
+  logic        is_ledr;
+  logic        is_gpio_in;
+  logic        is_led_out;
+  logic        is_mul_a;
+  logic        is_mul_b;
+  logic        is_mul_ctrl;
+  logic        is_mul_status;
+  logic        is_mul_result;
+  logic        is_conv_ctrl;
+  logic        is_conv_status;
+  logic        is_img_width;
+  logic        is_img_height;
+  logic        is_img_addr;
+  logic        is_img_data;
+  logic        is_ker_addr;
+  logic        is_ker_data;
 
-  wire        is_dmem;
-  wire        is_out;
-  wire        is_in;
+  logic        is_dmem;
+  logic        is_mmio;
 
-  wire [15:0] dmem_ptr;
+  logic [15:0] dmem_ptr;
 
-  reg         mem_wren;
+  logic        mem_wren;
 
-  reg         is_sbyte;
-  reg         is_ubyte;
-  reg         is_shb;
-  reg         is_uhb;
-  reg         is_word;
+  logic        is_sbyte;
+  logic        is_ubyte;
+  logic        is_shb;
+  logic        is_uhb;
+  logic        is_word;
 
-  reg  [31:0] dmem;
+  logic [31:0] dmem;
 
-  reg  [31:0] ledr_next, ledg_next, lcd_next;
-  reg  [6:0]  hex0_next, hex1_next, hex2_next, hex3_next;
-  reg  [6:0]  hex4_next, hex5_next, hex6_next, hex7_next;
+  logic [31:0] led_out_next;
+  logic [31:0] mul_a_next;
+  logic [31:0] mul_b_next;
+  logic [31:0] mul_ctrl_next;
+  logic [31:0] mul_status_next;
+  logic [31:0] mul_result_next;
+  logic [31:0] conv_ctrl_next; 
+  logic [31:0] conv_status_next;
+  logic [31:0] img_width_next;
+  logic [31:0] img_height_next;
+  logic [31:0] img_addr_next;
+  logic [31:0] img_data_next;
+  logic [31:0] ker_addr_next;
+  logic [31:0] ker_data_next;
+  logic [31:0] out_addr_next;
+  logic [31:0] out_data_next;
 
-  reg  [31:0] st_wdata;
-  reg  [31:0] ld_data;
-  reg  [15:0] halfword_out;
-  reg  [7:0]  byte_out;
+  logic [31:0] st_wdata;
+  logic [31:0] ld_data;
+  logic [15:0] halfword_out;
+  logic [7:0]  byte_out;
 
-  reg  [3:0]  bmask_align;
-  reg  [3:0]  bmask_misalign;
+  logic [3:0]  bmask_align;
+  logic [3:0]  bmask_misalign;
 
-//====================================CODE====================================================================
+//====================================MISALIGN====================================================================
   always_comb begin
-    is_ubyte = 1'b0;
-    is_sbyte = 1'b0;
-    is_uhb   = 1'b0;
-    is_shb   = 1'b0;
-    is_word  = 1'b0;
-    bmask_align = 4'b0;
+    is_ubyte       = 1'b0;
+    is_sbyte       = 1'b0;
+    is_uhb         = 1'b0;
+    is_shb         = 1'b0;
+    is_word        = 1'b0;
+    bmask_align    = 4'b0;
     bmask_misalign = 4'b0;
     case (i_func3)
       3'b000: is_sbyte = 1'b1;
@@ -167,19 +194,37 @@ module lsu (
       endcase
     end
   end
-
+//================================================ADDRESS DECODING========================================================
+  // ==============================================================================
+  // DATA MEMORY (Giả sử RAM nằm ở vùng 0x0000_XXXX)
+  // ==============================================================================
   assign dmem_ptr  =  i_lsu_addr[15:0];
-  assign is_dmem   =  ~i_lsu_addr[28];                        //0000 -> bit 28 == 0
-  assign is_out    =  (i_lsu_addr[28] && ~(i_lsu_addr[16])); //1000 -> a[28] & ~a[16]
-  assign is_in     =  (i_lsu_addr[28] &&   i_lsu_addr[16] ); //1001 -> a[28] & a[16]
-
-  assign is_ledr   = is_out && (~i_lsu_addr[14] && ~i_lsu_addr[13] && ~i_lsu_addr[12]); // 0x1000_0xxx
-  assign is_ledg   = is_out && (~i_lsu_addr[14] && ~i_lsu_addr[13] &&  i_lsu_addr[12]); // 0x1000_1xxx
-  assign is_hex03  = is_out && (~i_lsu_addr[14] &&  i_lsu_addr[13] && ~i_lsu_addr[12]); // 0x1000_2xxx
-  assign is_hex47  = is_out && (~i_lsu_addr[14] &&  i_lsu_addr[13] &&  i_lsu_addr[12]); // 0x1000_3xxx
-  assign is_lcd    = is_out && ( i_lsu_addr[14] && ~i_lsu_addr[13] && ~i_lsu_addr[12]); // 0x1000_4xxx
-  assign is_sw     = is_in  && ( i_lsu_addr[16] && ~i_lsu_addr[13]                  );  // 0x1001_0xxx
-
+  assign is_dmem   = (i_lsu_addr[31:28] == 4'h0); 
+  // ==============================================================================
+  // MEMORY-MAPPED I/O (MMIO) - Base Address: 0x4000_XXXX
+  // ==============================================================================
+  assign is_mmio = (i_lsu_addr[31:28] == 4'h4);
+  // 1. Nhóm Peripherals cơ bản (Offset 0x000)
+  assign is_gpio_in    = is_mmio && (i_lsu_addr[11:0] == 12'h000); // RO
+  assign is_led_out    = is_mmio && (i_lsu_addr[11:0] == 12'h004); // RW\
+  // 2. Nhóm Multiplier Accelerator (Offset 0x100)
+  assign is_mul_a      = is_mmio && (i_lsu_addr[11:0] == 12'h100); // RW
+  assign is_mul_b      = is_mmio && (i_lsu_addr[11:0] == 12'h104); // RW
+  assign is_mul_ctrl   = is_mmio && (i_lsu_addr[11:0] == 12'h108); // RW
+  assign is_mul_status = is_mmio && (i_lsu_addr[11:0] == 12'h10C); // RO
+  assign is_mul_result = is_mmio && (i_lsu_addr[11:0] == 12'h110); // RO
+  // 3. Nhóm Convolution Accelerator (Offset 0x200)
+  assign is_conv_ctrl   = is_mmio && (i_lsu_addr[11:0] == 12'h200); // RW
+  assign is_conv_status = is_mmio && (i_lsu_addr[11:0] == 12'h204); // RO
+  assign is_img_width   = is_mmio && (i_lsu_addr[11:0] == 12'h208); // RW
+  assign is_img_height  = is_mmio && (i_lsu_addr[11:0] == 12'h20C); // RW
+  assign is_img_addr    = is_mmio && (i_lsu_addr[11:0] == 12'h210); // RW
+  assign is_img_data    = is_mmio && (i_lsu_addr[11:0] == 12'h214); // RW
+  assign is_ker_addr    = is_mmio && (i_lsu_addr[11:0] == 12'h218); // RW
+  assign is_ker_data    = is_mmio && (i_lsu_addr[11:0] == 12'h21C); // RW
+  assign is_out_addr    = is_mmio && (i_lsu_addr[11:0] == 12'h220); // RW
+  assign is_out_data    = is_mmio && (i_lsu_addr[11:0] == 12'h224); // RO
+//==================================MEMORY INSTANTIATION========================================================
   memory memory (
                 .i_clk  (i_clk),
                 .i_reset(i_reset),
@@ -196,15 +241,7 @@ module lsu (
     mem_wren  = 1'b0;
     ld_data   = 32'b0;
     st_wdata  = i_st_data;
-
-    ledr_next = o_io_ledr;
-    ledg_next = o_io_ledg;
-    lcd_next  = o_io_lcd;
-    hex0_next = o_io_hex0; hex1_next = o_io_hex1;
-    hex2_next = o_io_hex2; hex3_next = o_io_hex3;
-    hex4_next = o_io_hex4; hex5_next = o_io_hex5;
-    hex6_next = o_io_hex6; hex7_next = o_io_hex7;
-
+    led_out_next = o_led_out;
     if(is_dmem) begin
       if(i_lsu_wren) begin
         mem_wren = 1'b1;
@@ -225,118 +262,49 @@ module lsu (
       end else begin
         ld_data = dmem;
       end
-    end else if (i_lsu_wren && is_ledr) begin
-        ledr_next = st_wdata;
-    end else if (i_lsu_wren && is_ledg) begin
-        ledg_next = st_wdata;
-    end else if (i_lsu_wren && is_hex03) begin
-          case (bmask_align)
-            4'b0000: begin
-              hex0_next = 7'b1111111;
-              hex1_next = 7'b1111111;
-              hex2_next = 7'b1111111;
-              hex3_next = 7'b1111111;
-            end
-            4'b0001: hex0_next = st_wdata[6:0];
-            4'b0010: hex1_next = st_wdata[6:0];
-            4'b0100: hex2_next = st_wdata[6:0];
-            4'b1000: hex3_next = st_wdata[6:0];
-            4'b0011: begin
-              hex0_next = st_wdata[6:0];
-              hex1_next = st_wdata[14:8];
-              hex2_next = 7'b0;
-              hex3_next = 7'b0;
-            end
-            4'b1100: begin
-              hex0_next = 7'b0;
-              hex1_next = 7'b0;
-              hex2_next = st_wdata[6:0];
-              hex3_next = st_wdata[14:8];
-            end
-            4'b1111: begin
-              hex0_next = st_wdata[6:0];
-              hex1_next = st_wdata[14:8];
-              hex2_next = st_wdata[22:16];
-              hex3_next = st_wdata[30:24];
-            end
-            default: begin
-              hex0_next = 7'b1111111;
-              hex1_next = 7'b1111111;
-              hex2_next = 7'b1111111;
-              hex3_next = 7'b1111111;
-            end
-          endcase
-      end else if (is_hex47 && i_lsu_wren) begin
-        case (bmask_align)
-          4'b0000: begin
-            hex4_next = 7'b1111111;
-            hex5_next = 7'b1111111;
-            hex6_next = 7'b1111111;
-            hex7_next = 7'b1111111;
-          end
-          4'b0001: hex4_next = st_wdata[6:0];
-          4'b0010: hex5_next = st_wdata[6:0];
-          4'b0100: hex6_next = st_wdata[6:0];
-          4'b1000: hex7_next = st_wdata[6:0];
-          4'b0011: begin
-            hex4_next = st_wdata[6:0];
-            hex5_next = st_wdata[14:8];
-            hex6_next = 7'b0;
-            hex7_next = 7'b0;
-          end
-          4'b1100: begin
-            hex4_next = 7'b0;
-            hex5_next = 7'b0;
-            hex6_next = st_wdata[6:0];
-            hex7_next = st_wdata[14:8];
-          end
-          4'b1111: begin
-            hex4_next = st_wdata[6:0];
-            hex5_next = st_wdata[14:8];
-            hex6_next = st_wdata[22:16];
-            hex7_next = st_wdata[30:24];
-          end
-          default: begin
-            hex4_next = 7'b1111111;
-            hex5_next = 7'b1111111;
-            hex6_next = 7'b1111111;
-            hex7_next = 7'b1111111;
-          end
-        endcase
-      end else if (i_lsu_wren && is_lcd) begin
-        lcd_next = st_wdata;
-      end else if (~i_lsu_wren && is_sw) begin
-        ld_data = i_io_sw;
-      end
-    end
-  always_ff @(posedge i_clk or negedge i_reset) begin
-    if (~i_reset) begin
-        o_io_ledr <= 32'b0;
-        o_io_ledg <= 32'b0;
-        o_io_lcd  <= 32'b0;
-        o_io_hex0 <= 7'b1111111;
-        o_io_hex1 <= 7'b1111111;
-        o_io_hex2 <= 7'b1111111;
-        o_io_hex3 <= 7'b1111111;
-        o_io_hex4 <= 7'b1111111;
-        o_io_hex5 <= 7'b1111111;
-        o_io_hex6 <= 7'b1111111;
-        o_io_hex7 <= 7'b1111111;
-    end else if (i_lsu_wren) begin
-        o_io_ledr <= ledr_next;
-        o_io_ledg <= ledg_next;
-        o_io_lcd  <= lcd_next;
-        o_io_hex0 <= hex0_next;
-        o_io_hex1 <= hex1_next;
-        o_io_hex2 <= hex2_next;
-        o_io_hex3 <= hex3_next;
-        o_io_hex4 <= hex4_next;
-        o_io_hex5 <= hex5_next;
-        o_io_hex6 <= hex6_next;
-        o_io_hex7 <= hex7_next;
+    end else if (i_lsu_wren && is_led_out) begin
+      led_out_next = st_wdata;
+    end else if (i_lsu_wren && is_mul_a) begin
+      mul_a_next = st_wdata;
+    end else if (i_lsu_wren && is_mul_b) begin
+      mul_b_next = st_wdata;
+    end else if (i_lsu_wren && is_mul_ctrl) begin
+      mul_ctrl_next = st_wdata;
+    end else if (i_lsu_wren && is_conv_ctrl) begin
+      conv_ctrl_next = st_wdata;
+    end else if (i_lsu_wren && is_img_width) begin
+      ld_data = i_img_width;
+    end else if (i_lsu_wren && is_img_height) begin
+      ld_data = i_img_height;
+    end else if (is_img_addr) begin
+      ld_data = i_img_addr;
+    end else if (is_img_data) begin
+      ld_data = i_img_data;
+    end else if (is_ker_addr) begin
+      ld_data = i_ker_addr;
+    end else if (is_ker_data) begin
+      ld_data = i_ker_data;
+    end else if (is_out_addr) begin
+      ld_data = o_out_addr;
+    end else if (~i_lsu_wren && is_mul_status) begin
+      ld_data = i_mul_status;
+    end else if (~i_lsu_wren && is_mul_result) begin
+      ld_data = i_mul_result;
+    end else if (~i_lsu_wren && is_conv_status) begin
+      ld_data = i_conv_status;
+    end else if (~i_lsu_wren && is_out_data) begin
+      ld_data = o_out_data;
+    end else if (~i_lsu_wren && is_gpio_in) begin
+      ld_data = i_gpio_in;
     end
   end
-
+  always_ff @(posedge i_clk or negedge i_reset) begin
+    if (~i_reset) begin
+        o_led_out <= 32'b0;
+    end else if (i_lsu_wren) begin
+        o_led_out <= led_out_next;
+    end
+  end
   always_comb begin
     o_ld_data = ld_data;
   end

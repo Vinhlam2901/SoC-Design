@@ -5,12 +5,11 @@ package package_param;
 //=====================PARAMETER=========================
 //=======================================================
   parameter WIDTH_PIXEL   = 8;
-  parameter WIDTH_KERNEL  = 4;      							// 4bit for kernel's coefficiency from [-8:7]
+  parameter WIDTH_KERNEL  = 8;      							// 4bit for kernel's coefficiency from [-8:7]
   parameter WIDTH         = 256;                  // Image Width
   parameter LENGTH        = 256;                 	// Image Height
-  parameter WIDTH_MUL_MAC = 22;                  	// WC (10bit) * PX (8bit) = 18bit + 4 bit guard for MAC
-  parameter WIDTH_MAC     = 15;
-  parameter WIDTH_MUL     = 12;
+  parameter WIDTH_MAC     = 20;
+  parameter WIDTH_MUL     = 16;
 	parameter RTYPE         = 7'b0110011;
 	parameter ITYPE         = 7'b0010011;
 	parameter IITYPE        = 7'b1100111;

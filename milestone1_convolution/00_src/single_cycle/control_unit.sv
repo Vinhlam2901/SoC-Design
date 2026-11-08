@@ -1,26 +1,26 @@
 import package_param::*;
 module control_unit (
-  input  wire  [31:0] instruction,
-  output reg          o_insn_vld,
-  output reg          pc_sel,
-  output reg          br_unsign,
-  output reg          op1_sel,
-  output reg          op2_sel,
-  output reg  [3:0]   alu_opcode,
-  output reg          rd_wren,
-  output reg  [1:0]   wb_sel,
-  output reg          mem_wren
+  input  logic [31:0] instruction,
+  output logic        o_insn_vld,
+  output logic        pc_sel,
+  output logic        br_unsign,
+  output logic        op1_sel,
+  output logic        op2_sel,
+  output logic [3:0]  alu_opcode,
+  output logic        rd_wren,
+  output logic [1:0]  wb_sel,
+  output logic        mem_wren
 );
 //===================================DECLARATION==================================================
-  wire is_add, is_sub, is_and, is_or, is_xor, is_slt, is_sltu, is_sra, is_srl, is_sll;
-  wire is_addi, is_xori, is_ori, is_andi, is_slli, is_srli, is_srai, is_slti, is_sltiu;
-  wire is_beq, is_bne, is_blt, is_bge, is_bltu, is_bgeu;
-  wire [31:0] pc_addr, rs1_data, rs2_data;
-  wire [9:0] rtype;
-  wire [8:0] itype;
-  wire [4:0] iltype;
-  wire [2:0] stype;
-  wire [5:0] btype;
+  logic        is_add, is_sub, is_and, is_or, is_xor, is_slt, is_sltu, is_sra, is_srl, is_sll, is_mul;
+  logic        is_addi, is_xori, is_ori, is_andi, is_slli, is_srli, is_srai, is_slti, is_sltiu;
+  logic        is_beq, is_bne, is_blt, is_bge, is_bltu, is_bgeu;
+  logic [31:0] pc_addr, rs1_data, rs2_data;
+  logic [10:0] rtype;
+  logic [8:0]  itype;
+  logic [4:0]  iltype;
+  logic [2:0]  stype;
+  logic [5:0]  btype;
   
   always_comb begin
 	case(instruction[6:0])
@@ -55,9 +55,15 @@ module control_unit (
   //is_or
   assign is_or    = ~instruction[12] & instruction[13]  &  instruction[14];
   //is_and
-  assign is_and   =  instruction[12] & instruction[13]  &  instruction[14];
+  assign is_and   =  instruction[12] & instruction[13]  &  instruction[14]  & ~instruction[30];
+  /* 
+  MUL OPRAND
+  func7 | rs2 | rs1 | func3 | rd | opcode
+  0x20  | rs2 | rs1 | 0x7   | rd | 0110011
+  */
+  assign is_mul  = instruction[12] & instruction[13]  &  instruction[14]    & instruction[30];
   // concatenat
-  assign rtype = {is_add, is_sub, is_sll, is_slt, is_sltu, is_xor, is_srl, is_sra, is_or, is_and};
+  assign rtype = {is_add, is_sub, is_sll, is_slt, is_sltu, is_xor, is_srl, is_sra, is_or, is_and, is_mul};
 //==========================ITYPE=========================================================================
   //is_addi
   assign is_addi  = ~instruction[12] & ~instruction[13] & ~instruction[14];
@@ -104,17 +110,18 @@ module control_unit (
     mem_wren    = ( instruction[6:0] == STYPE)     ? 1'b1 : 1'b0;
     case (instruction[6:0])
       RTYPE: case (rtype)
-              10'b1000000000 : alu_opcode = 4'b0000;  // add
-              10'b0100000000 : alu_opcode = 4'b0001;  // sub
-              10'b0010000000 : alu_opcode = 4'b0010;  // sll
-              10'b0001000000 : alu_opcode = 4'b0011;  // slt
-              10'b0000100000 : alu_opcode = 4'b0100;  // sltu
-              10'b0000010000 : alu_opcode = 4'b0101;  // xor
-              10'b0000001000 : alu_opcode = 4'b0110;  // srl
-              10'b0000000100 : alu_opcode = 4'b0111;  // sra
-              10'b0000000010 : alu_opcode = 4'b1000;  // or
-              10'b0000000001 : alu_opcode = 4'b1001;  // amd
-              default        : alu_opcode = 4'b0000;
+              11'b10000000000 : alu_opcode = 4'b0000;  // add
+              11'b01000000000 : alu_opcode = 4'b0001;  // sub
+              11'b00100000000 : alu_opcode = 4'b0010;  // sll
+              11'b00010000000 : alu_opcode = 4'b0011;  // slt
+              11'b00001000000 : alu_opcode = 4'b0100;  // sltu
+              11'b00000100000 : alu_opcode = 4'b0101;  // xor
+              11'b00000010000 : alu_opcode = 4'b0110;  // srl
+              11'b00000001000 : alu_opcode = 4'b0111;  // sra
+              11'b00000000100 : alu_opcode = 4'b1000;  // or
+              11'b00000000010 : alu_opcode = 4'b1001;  // and
+              11'b00000000001 : alu_opcode = 4'b1010;  // mul
+              default         : alu_opcode = 4'b0000;
             endcase
       ITYPE: case (itype)
               9'b100000000   : begin

@@ -1,22 +1,33 @@
 import package_param::*;
 module single_cycle (
-  input  logic         i_clk     ,
-  input  logic         i_reset   ,
-  input  logic [31:0]  i_io_sw   ,
-  output logic [31:0]  o_io_ledr ,
-  output logic [31:0]  o_io_ledg ,
-  output logic [ 6:0]  o_io_hex0 ,
-  output logic [ 6:0]  o_io_hex1 ,
-  output logic [ 6:0]  o_io_hex2 ,
-  output logic [ 6:0]  o_io_hex3 ,
-  output logic [ 6:0]  o_io_hex4 ,
-  output logic [ 6:0]  o_io_hex5 ,
-  output logic [ 6:0]  o_io_hex6 ,
-  output logic [ 6:0]  o_io_hex7 ,
-  output logic [31:0]  o_io_lcd  ,
-  output logic [31:0]  o_pc_debug,
-  output logic         o_insn_vld
-  );
+  input  logic        i_clk,
+  input  logic        i_reset,
+  input  logic [31:0] i_gpio_in,
+  input  logic [31:0] i_mul_status,   // bit[0]: busy, bit[1]: done. Read 1 to check if the multiplication is done.
+  input  logic [31:0] i_mul_result,
+  input  logic [31:0] i_conv_status,  // bit[0]: busy, bit[1]: done. Read 1 to check if the convolution is done.
+
+  output logic [31:0] i_mul_a,
+  output logic [31:0] i_mul_b,
+  output logic [31:0] i_mul_ctrl,     // bit[0]: start. Write 1 to start the multiplication, bit[1]: reset. Write 1 to reset the multiplier.
+
+  output logic [31:0] i_conv_ctrl,    // bit[0]: start. Write 1 to start the convolution.
+
+  output logic [31:0] i_img_width,
+  output logic [31:0] i_img_height,
+  output logic [31:0] i_img_addr,
+  output logic [31:0] i_img_data,
+  output logic [31:0] i_ker_addr,
+  output logic [31:0] i_ker_data,
+
+  output logic [31:0] o_out_addr,
+  output logic [31:0] o_out_data,
+  
+  output logic [31:0] o_ld_data,
+  output logic [31:0] o_led_out,
+  output logic [31:0] o_pc_debug,
+  output logic        o_insn_vld
+);
 //==================Declaration================================================================================
   logic [31:0]  inst;
   logic [31:0]  next_pc;
@@ -46,9 +57,9 @@ module single_cycle (
 //==================PC=============================================================================================
   always_ff @(posedge i_clk or negedge i_reset) begin: pc_reg
     if (~i_reset) begin
-        o_pc_debug <= 32'b0;
+      o_pc_debug <= 32'b0;
     end else begin
-        o_pc_debug <= next_pc;
+      o_pc_debug <= next_pc;
     end
   end
   pc_reg PCplus4 (
@@ -124,11 +135,11 @@ module single_cycle (
   assign op2 = (op2_sel) ? imm_ex : rs2_data;
 //==================ALU=================================================================================================
   alu alu (
-            .i_op_a      (op1),
-            .i_op_b      (op2),
-            .br_unsign_i (br_unsign),
-            .i_alu_op    (alu_op),
-            .o_alu_data  (rd_data_o)
+          .i_op_a      (op1),
+          .i_op_b      (op2),
+          .br_unsign_i (br_unsign),
+          .i_alu_op    (alu_op),
+          .o_alu_data  (rd_data_o)
           );
 //==================LSU=================================================================================================
   always_comb begin
@@ -153,25 +164,30 @@ module single_cycle (
     end
   end
   lsu lsu (
-            .i_clk      (i_clk),
-            .i_reset    (i_reset),
-            .i_lsu_addr (rd_data_o),
-            .i_st_data  (wr_data),
-            .i_lsu_wren (mem_wren),
-            .i_func3    (inst[14:12]),
-            .i_io_sw    (i_io_sw),
-            .o_io_hex0  (o_io_hex0),
-            .o_io_hex1  (o_io_hex1),
-            .o_io_hex2  (o_io_hex2),
-            .o_io_hex3  (o_io_hex3),
-            .o_io_hex4  (o_io_hex4),
-            .o_io_hex5  (o_io_hex5),
-            .o_io_hex6  (o_io_hex6),
-            .o_io_hex7  (o_io_hex7),
-            .o_ld_data  (read_data),
-            .o_io_ledr  (o_io_ledr),
-            .o_io_ledg  (o_io_ledg),
-            .o_io_lcd   (o_io_lcd)
+            .i_clk         (i_clk),
+            .i_reset       (i_reset),
+            .i_lsu_addr    (rd_data_o),
+            .i_st_data     (wr_data),
+            .i_lsu_wren    (mem_wren),
+            .i_func3       (inst[14:12]),
+            .i_gpio_in     (i_gpio_in),
+            .i_mul_status  (i_mul_status),   // bit[0]: busy, bit[1]: done. Read 1 to check if the multiplication is done.
+            .i_mul_result  (i_mul_result),
+            .i_conv_status (i_conv_status),  // bit[0]: busy, bit[1]: done. Read 1 to check if the convolution is done.
+            .i_mul_a       (i_mul_a),
+            .i_mul_b       (i_mul_b),
+            .i_mul_ctrl    (i_mul_ctrl),     // bit[0]: start. Write 1 to start the multiplication, bit[1]: reset. Write 1 to reset the multiplier.
+            .i_conv_ctrl   (i_conv_ctrl),    // bit[0]: start. Write 1 to start the convolution.
+            .i_img_width   (i_img_width),
+            .i_img_height  (i_img_height),
+            .i_img_addr    (i_img_addr),
+            .i_img_data    (i_img_data),
+            .i_ker_addr    (i_ker_addr),
+            .i_ker_data    (i_ker_data),
+            .o_out_addr    (o_out_addr),
+            .o_out_data    (o_out_data),
+            .o_ld_data     (o_ld_data),
+            .o_led_out     (o_led_out)
           );
 //==================WRITEBACK=========================================================================================
   always_comb begin : write_back
@@ -186,12 +202,12 @@ module single_cycle (
     2'b01: begin  : pc_jump
       // jmp_pc thực hiện dựa trên func3
       case (inst[14:12])
-        3'b000: jmp_pc = ( br_equal)                           ? rd_data_o : (o_pc_debug + 32'd4); // beq
-        3'b001: jmp_pc = (~br_equal)                           ? rd_data_o : (o_pc_debug + 32'd4); // bne
-        3'b100: jmp_pc = ( br_less)                            ? rd_data_o : (o_pc_debug + 32'd4); // blt
-        3'b101: jmp_pc = (~br_less || br_equal)                ? rd_data_o : (o_pc_debug + 32'd4); // bge
-        3'b110: jmp_pc = ( br_less && br_unsign)               ? rd_data_o : (o_pc_debug + 32'd4); // bltu
-        3'b111: jmp_pc = (~br_less || (br_equal && br_unsign)) ? rd_data_o : (o_pc_debug + 32'd4); // bgeu
+        3'b000:  jmp_pc = ( br_equal)                           ? rd_data_o : (pc_plus4); // beq
+        3'b001:  jmp_pc = (~br_equal)                           ? rd_data_o : (pc_plus4); // bne
+        3'b100:  jmp_pc = ( br_less)                            ? rd_data_o : (pc_plus4); // blt
+        3'b101:  jmp_pc = (~br_less || br_equal)                ? rd_data_o : (pc_plus4); // bge
+        3'b110:  jmp_pc = ( br_less && br_unsign)               ? rd_data_o : (pc_plus4); // bltu
+        3'b111:  jmp_pc = (~br_less || (br_equal && br_unsign)) ? rd_data_o : (pc_plus4); // bgeu
         default: jmp_pc = rd_data_o; // JALR hoặc fallback
       endcase
     end

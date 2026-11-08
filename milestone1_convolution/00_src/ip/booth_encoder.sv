@@ -1,7 +1,7 @@
 import package_param::*;
 module booth_encoder #(
   parameter WIDTH_PIXEL = 8,
-  parameter WIDTH_KERNEL = 4
+  parameter WIDTH_KERNEL = 8
 )(
   input  logic [WIDTH_PIXEL-1:0]                       opa_i,
   input  logic [WIDTH_KERNEL-1:0]                      opb_i,
