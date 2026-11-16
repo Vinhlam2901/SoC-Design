@@ -1,5 +1,7 @@
 import package_param::*;
-module single_cycle (
+module single_cycle #(
+  parameter IMEM_FILE = "02_test/isa_4b.hex"
+)(
   input  logic        i_clk,
   input  logic        i_reset,
   input  logic [31:0] i_gpio_in,
@@ -31,7 +33,6 @@ module single_cycle (
   logic [31:0]  wb_data_o;
   logic [31:0]  rd_data_o;
   logic [31:0]  wr_data;
-  logic [31:0]  read_data;
   logic [31:0]  mem           [0:2047];   //8kB
 //==================Instance=====================================================================================
 //==================PC=============================================================================================
@@ -49,7 +50,7 @@ module single_cycle (
   assign next_pc = (pc_sel) ? jmp_pc : pc_plus4;
 //==================IMEM=========================================================================================
   initial begin : instruction
-    $readmemh("../03_test/isa_4b.hex", mem);
+    if (IMEM_FILE != "") $readmemh(IMEM_FILE, mem);
   end
 	assign inst = mem[o_pc_debug[31:2]];
 //==================REGFILE========================================================================================
@@ -92,24 +93,9 @@ module single_cycle (
                               );
 //==================OPERATION_1=======================================================================================
   always_comb begin : op1_sel_branch
-	  op1 = rs1_data;
-    if(inst[6:0] == STYPE && op1_sel) begin
-      case (inst[14:12])
-        3'b000: op1 = ( br_equal                         ) ? o_pc_debug : rs1_data; // beq
-        3'b001: op1 = (~br_equal                         ) ? o_pc_debug : rs1_data; // bne
-        3'b100: op1 = ( br_less                          ) ? o_pc_debug : rs1_data; // blt
-        3'b101: op1 = (~br_less || br_equal              ) ? o_pc_debug : rs1_data; // bge > or =
-        3'b110: op1 = ( br_less && br_unsign             ) ? o_pc_debug : rs1_data; // bltu
-        3'b111: op1 = (~br_less || br_equal && br_unsign ) ? o_pc_debug : rs1_data; // bgeu
-        default:op1 = op1;
-      endcase
-    end else if (inst[6:0] == U1TYPE) begin
-      op1 = 32'b0;
-    end else if (inst[6:0] == U2TYPE) begin
-      op1 = o_pc_debug;
-    end else begin
-      op1 = (op1_sel) ? o_pc_debug : rs1_data;
-    end
+    if (inst[6:0] == U1TYPE) op1 = 32'b0;
+    else if (inst[6:0] == U2TYPE) op1 = o_pc_debug;
+    else op1 = op1_sel ? o_pc_debug : rs1_data;
   end
 //==================OPERATION_2=======================================================================================
   assign op2 = (op2_sel) ? imm_ex : rs2_data;
@@ -137,8 +123,6 @@ module single_cycle (
         3'b001,
         3'b101:   wr_data = wr_data & 32'h0000FFFF;
         3'b010:   wr_data = wr_data & 32'hFFFFFFFF;
-        3'b100:   wr_data = wr_data & 32'h000000FF;
-        3'b101:   wr_data = wr_data & 32'h0000FFFF;
         default : wr_data = wr_data & 32'hFFFFFFFF;
       endcase
     end
@@ -156,7 +140,6 @@ module single_cycle (
           );
 //==================WRITEBACK=========================================================================================
   always_comb begin : write_back
-  // giá trị mặc định cho mọi đường đi
   wb_data_o = 32'b0;
   jmp_pc    = 32'b0;
   case (wb_sel)
@@ -165,7 +148,6 @@ module single_cycle (
       jmp_pc = 32'b0;
     end
     2'b01: begin  : pc_jump
-      // jmp_pc thực hiện dựa trên func3
       case (inst[14:12])
         3'b000:  jmp_pc = ( br_equal)                           ? rd_data_o : (pc_plus4); // beq
         3'b001:  jmp_pc = (~br_equal)                           ? rd_data_o : (pc_plus4); // bne
@@ -178,9 +160,9 @@ module single_cycle (
     end
     2'b10: begin
       wb_data_o = pc_plus4;
-      jmp_pc    = rd_data_o;
+      jmp_pc    = (inst[6:0] == IITYPE) ? (rd_data_o & 32'hFFFFFFFE) : rd_data_o;
     end
-    2'b11: wb_data_o = read_data;
+    2'b11: wb_data_o = o_ld_data;
     default: wb_data_o = 32'b0;
   endcase
 end

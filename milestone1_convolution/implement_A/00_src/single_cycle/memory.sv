@@ -7,29 +7,29 @@
 // Updated date    : 6/11/2025 - Finished
 //=============================================================================================================
 module memory (
- input  wire        i_clk,
- input  wire        i_reset,
- input  wire [2:0]  i_func3,
- input  wire  [15:0] i_addr,
- input  wire  [31:0] i_wdata,
- input  wire  [3:0]  i_bmask_align,
- input  wire  [3:0]  i_bmask_misalign,
- input  wire         i_wren,
- output reg [31:0] o_rdata
+ input  logic        i_clk,
+ input  logic        i_reset,
+ input  logic [2:0]  i_func3,
+ input  logic [15:0] i_addr,
+ input  logic [31:0] i_wdata,
+ input  logic [3:0]  i_bmask_align,
+ input  logic [3:0]  i_bmask_misalign,
+ input  logic        i_wren,
+ output logic [31:0] o_rdata
 );
   integer  i;
-  reg  [31:0] mem         [0:2047]; // 2kB
-  reg  [31:0] mem_st_align;
-  reg  [31:0] mem_st_misalign;
-  reg  [31:0] mem_ld_align;
-  reg  [31:0] mem_ld_misalign;
-  wire [31:0] mem_addr;
-  wire [31:0] mem_addr_plus1;
-  reg         is_sbyte;
-  reg         is_ubyte;
-  reg         is_shb;
-  reg         is_uhb;
-  reg         is_word;
+  logic   [31:0] mem           [0:511]; // 2 KiB = 512 x 32 bits
+  logic   [31:0] mem_st_align;
+  logic   [31:0] mem_st_misalign;
+  logic   [31:0] mem_ld_align;
+  logic   [31:0] mem_ld_misalign;
+  logic   [31:0] mem_addr;
+  logic   [31:0] mem_addr_plus1;
+  logic          is_sbyte;
+  logic          is_ubyte;
+  logic          is_shb;
+  logic          is_uhb;
+  logic          is_word;
 
   always_comb begin
     is_ubyte = 1'b0;
@@ -73,6 +73,7 @@ module memory (
       4'b0100: mem_st_align    = {8'b0 , i_wdata[ 7:0], 16'b0};
       4'b1000: mem_st_align    = {       i_wdata[ 7:0], 24'b0};
       4'b0011: mem_st_align    = {16'b0, i_wdata[15:0]       };
+      4'b0110: mem_st_align    = {8'b0,  i_wdata[15:0], 8'b0};
       4'b1100: mem_st_align    = {       i_wdata[15:0], 16'b0};
       4'b1110: mem_st_align    = {       i_wdata[23:0], 8'b0 };
       4'b1111: mem_st_align    =         i_wdata;
@@ -89,7 +90,7 @@ module memory (
 
   always_ff @(posedge i_clk or negedge i_reset) begin : mem_align_store
     if (~i_reset) begin : reset
-      for(i = 0; i <= 2047; i = i + 1) begin
+      for(i = 0; i < 512; i = i + 1) begin
         mem[i] <= 32'b0;
       end
     end else if (i_wren) begin
@@ -103,7 +104,7 @@ module memory (
         if (i_bmask_misalign[3]) mem[mem_addr_plus1][31:24] <= mem_st_misalign[31:24];
     end
   end
-  
+
   always_comb begin : mem_load
     o_rdata = 32'b0;
     if(is_word) begin

@@ -163,12 +163,12 @@ module lsu (
   end
 //================================================ADDRESS DECODING========================================================
   // ==============================================================================
-  // DATA MEMORY (Giả sử RAM nằm ở vùng 0x0000_XXXX)
+  // DATA MEMORY: 2 KiB at 0x0000_0000..0x0000_07FF
   // ============================================================================
-  // DATA MEMORY - 64 KB
+  // DATA MEMORY - 2 KiB
   // ============================================================================
   assign dmem_ptr = i_lsu_addr[15:0];
-  assign is_dmem  = (i_lsu_addr[31:16] == 16'h0000);
+  assign is_dmem  = (i_lsu_addr[31:11] == 21'b0);
   // ============================================================================
   // MEMORY-MAPPED I/O
   // ============================================================================
@@ -189,41 +189,29 @@ module lsu (
               );
 
   always_comb begin : st_data
-    mem_wren  = 1'b0;
-    ld_data   = 32'b0;
-    st_wdata  = i_st_data;
+    mem_wren     = 1'b0;
+    ld_data      = 32'b0;
+    st_wdata     = i_st_data;
     led_out_next = o_led_out;
     if(is_dmem) begin
       if(i_lsu_wren) begin
-        mem_wren = 1'b1;
-        case (bmask_align)
-          4'b0000: mem_wren = 1'b0;
-          4'b0001,
-          4'b0010,
-          4'b0100: st_wdata = {24'b0, i_st_data[7:0]};
-          4'b1000: st_wdata = i_st_data;
-          4'b0011: st_wdata = {16'b0, i_st_data[15:0]};
-          4'b1100: st_wdata = {       i_st_data[15:0], 16'b0};
-          4'b1111: st_wdata =         i_st_data;
-          default: begin
-                   st_wdata = 32'b0;
-                   mem_wren = 1'b0;
-          end
-        endcase
+        mem_wren = |bmask_align;
       end else begin
         ld_data = dmem;
       end
     end else if (i_lsu_wren && is_led_out) begin
       led_out_next = st_wdata;
+    end else if (~i_lsu_wren && is_led_out) begin
+      ld_data = o_led_out;
     end else if (~i_lsu_wren && is_gpio_in) begin
       ld_data = i_gpio_in;
     end
   end
   always_ff @(posedge i_clk or negedge i_reset) begin
     if (~i_reset) begin
-        o_led_out <= 32'b0;
+      o_led_out <= 32'b0;
     end else if (i_lsu_wren) begin
-        o_led_out <= led_out_next;
+      o_led_out <= led_out_next;
     end
   end
   always_comb begin
